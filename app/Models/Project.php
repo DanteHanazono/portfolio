@@ -2,11 +2,11 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Project extends Model
@@ -143,7 +143,8 @@ class Project extends Model
 
         if ($this->start_date && $this->end_date) {
             $diff = $this->start_date->diffInMonths($this->end_date);
-            return $diff > 0 ? "{$diff} " . ($diff === 1 ? 'mes' : 'meses') : null;
+
+            return $diff > 0 ? "{$diff} ".($diff === 1 ? 'mes' : 'meses') : null;
         }
 
         return null;

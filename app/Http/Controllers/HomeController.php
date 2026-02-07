@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Certification;
+use App\Models\Education;
+use App\Models\Experience;
+use App\Models\Project;
+use App\Models\Skill;
+use App\Models\Technology;
+use App\Models\Testimonial;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
-use App\Models\Project;
-use App\Models\Skill;
-use App\Models\Testimonial;
-use App\Models\Technology;
-use App\Models\Experience;
-use App\Models\Education;
-use App\Models\Certification;
 
 class HomeController extends Controller
 {
@@ -129,7 +129,7 @@ class HomeController extends Controller
 
         $firstExperience = $experiences->min('start_date');
 
-        if (!$firstExperience) {
+        if (! $firstExperience) {
             return 0;
         }
 

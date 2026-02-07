@@ -52,7 +52,7 @@ class Experience extends Model
     {
         $endDate = $this->is_current ? now() : $this->end_date;
 
-        if (!$this->start_date || !$endDate) {
+        if (! $this->start_date || ! $endDate) {
             return 'N/A';
         }
 
@@ -62,14 +62,14 @@ class Experience extends Model
         $duration = [];
 
         if ($years > 0) {
-            $duration[] = $years . ' ' . ($years === 1 ? 'año' : 'años');
+            $duration[] = $years.' '.($years === 1 ? 'año' : 'años');
         }
 
         if ($months > 0) {
-            $duration[] = $months . ' ' . ($months === 1 ? 'mes' : 'meses');
+            $duration[] = $months.' '.($months === 1 ? 'mes' : 'meses');
         }
 
-        return !empty($duration) ? implode(' y ', $duration) : 'Menos de 1 mes';
+        return ! empty($duration) ? implode(' y ', $duration) : 'Menos de 1 mes';
     }
 
     public function getPeriodAttribute(): string

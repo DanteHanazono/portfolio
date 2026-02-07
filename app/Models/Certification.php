@@ -53,7 +53,7 @@ class Certification extends Model
 
     public function isExpired(): bool
     {
-        if ($this->does_not_expire || !$this->expiry_date) {
+        if ($this->does_not_expire || ! $this->expiry_date) {
             return false;
         }
 
@@ -62,7 +62,7 @@ class Certification extends Model
 
     public function isActive(): bool
     {
-        return !$this->isExpired();
+        return ! $this->isExpired();
     }
 
     public function getStatusAttribute(): string
@@ -71,7 +71,7 @@ class Certification extends Model
             return 'Sin vencimiento';
         }
 
-        if (!$this->expiry_date) {
+        if (! $this->expiry_date) {
             return 'Activa';
         }
 
@@ -80,7 +80,7 @@ class Certification extends Model
 
     public function getDaysUntilExpirationAttribute(): ?int
     {
-        if ($this->does_not_expire || !$this->expiry_date) {
+        if ($this->does_not_expire || ! $this->expiry_date) {
             return null;
         }
 

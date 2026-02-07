@@ -15,14 +15,16 @@ export type Project = {
     title: string;
     slug: string;
     description: string | null;
+    content: string | null;
     featured_image: string | null;
     thumbnail: string | null;
-    gallery: string | null;
+    gallery: string[] | null;
     video_url: string | null;
     demo_url: string | null;
     github_url: string | null;
     client_name: string | null;
     client_logo: string | null;
+    client_website: string | null;
     client_testimonial: string | null;
     client_position: string | null;
     start_date: string | null;
