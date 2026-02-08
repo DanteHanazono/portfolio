@@ -63,6 +63,31 @@ class ProjectController extends Controller
             'user',
         ])->where('slug', $slug)->firstOrFail();
 
+        $relatedProjects = Project::published()
+            ->where('id', '!=', $project->id)
+            ->with(['technologies'])
+            ->inRandomOrder()
+            ->take(3)
+            ->get();
+
+        return Inertia::render('Projects/Show', [
+            'project' => $project,
+            'relatedProjects' => $relatedProjects,
+        ]);
+    }
+
+    public function publicShow(string $slug): Response
+    {
+        $project = Project::published()
+            ->with([
+                'technologies',
+                'features' => fn ($q) => $q->ordered(),
+                'publishedTestimonials' => fn ($q) => $q->ordered(),
+                'user',
+            ])
+            ->where('slug', $slug)
+            ->firstOrFail();
+
         $project->incrementViews();
 
         $relatedProjects = Project::published()
@@ -72,7 +97,7 @@ class ProjectController extends Controller
             ->take(3)
             ->get();
 
-        return Inertia::render('Projects/Show', [
+        return Inertia::render('ProjectDetail', [
             'project' => $project,
             'relatedProjects' => $relatedProjects,
         ]);
@@ -251,8 +276,12 @@ class ProjectController extends Controller
             ->with('success', 'Proyecto eliminado exitosamente');
     }
 
-    public function like(Project $project): RedirectResponse
+    public function like(string $slug): RedirectResponse
     {
+        $project = Project::published()
+            ->where('slug', $slug)
+            ->firstOrFail();
+
         $project->incrementLikes();
 
         return back()->with('success', 'Like agregado');

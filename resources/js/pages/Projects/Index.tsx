@@ -205,9 +205,9 @@ export default function Index({ projects, technologies, filters }: ProjectsIndex
                             >
                                 {/* Image */}
                                 <div className="relative aspect-video overflow-hidden">
-                                    {project.featured_image ? (
+                                    {project.featured_image_url ? (
                                         <img
-                                            src={`/storage/${project.featured_image}`}
+                                            src={project.featured_image_url}
                                             alt={project.title}
                                             className="size-full object-cover transition-transform duration-700 group-hover:scale-110"
                                         />

@@ -201,16 +201,16 @@ export default function Home({ featuredProjects, highlightedSkills, featuredTest
 
                 <div className="mt-12 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
                     {featuredProjects.map((project, index) => (
-                        <div
+                        <Link
                             key={project.id}
-                            className={`group relative overflow-hidden rounded-2xl border border-border/50 bg-card transition-all duration-500 hover:-translate-y-1 hover:border-border hover:shadow-2xl ${index === 0 ? 'md:col-span-2 md:row-span-2' : ''
-                                }`}
+                            href={`/project/${project.slug}`}
+                            className={`group relative overflow-hidden rounded-2xl border border-border/50 bg-card transition-all duration-500 hover:-translate-y-1 hover:border-border hover:shadow-2xl ${index === 0 ? 'md:col-span-2 md:row-span-2' : ''}`}
                         >
                             {/* Image with overlay */}
                             <div className={`relative overflow-hidden ${index === 0 ? 'aspect-[16/10]' : 'aspect-video'}`}>
-                                {project.featured_image ? (
+                                {project.featured_image_url ? (
                                     <img
-                                        src={project.featured_image}
+                                        src={project.featured_image_url}
                                         alt={project.title}
                                         className="size-full object-cover transition-transform duration-700 group-hover:scale-110"
                                     />
@@ -230,6 +230,7 @@ export default function Home({ featuredProjects, highlightedSkills, featuredTest
                                                 href={project.demo_url}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
+                                                onClick={(e) => e.stopPropagation()}
                                                 className="inline-flex items-center gap-1.5 rounded-lg bg-white/20 px-3 py-1.5 text-xs font-medium text-white backdrop-blur-sm transition-colors hover:bg-white/30"
                                             >
                                                 <ExternalLink className="size-3" />
@@ -241,6 +242,7 @@ export default function Home({ featuredProjects, highlightedSkills, featuredTest
                                                 href={project.github_url}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
+                                                onClick={(e) => e.stopPropagation()}
                                                 className="inline-flex items-center gap-1.5 rounded-lg bg-white/20 px-3 py-1.5 text-xs font-medium text-white backdrop-blur-sm transition-colors hover:bg-white/30"
                                             >
                                                 <Github className="size-3" />
@@ -277,7 +279,7 @@ export default function Home({ featuredProjects, highlightedSkills, featuredTest
                                     )}
                                 </div>
                             </div>
-                        </div>
+                        </Link>
                     ))}
                 </div>
 

@@ -174,10 +174,10 @@ export default function Show({ project }: ProjectsShowProps) {
                 {/* Main content */}
                 <div className="space-y-6 lg:col-span-2">
                     {/* Featured Image */}
-                    {project.featured_image && (
+                    {project.featured_image_url && (
                         <div className="overflow-hidden rounded-2xl border border-border/50 bg-card">
                             <img
-                                src={`/storage/${project.featured_image}`}
+                                src={project.featured_image_url}
                                 alt={project.title}
                                 className="aspect-video w-full object-cover"
                             />
@@ -203,13 +203,13 @@ export default function Show({ project }: ProjectsShowProps) {
                     )}
 
                     {/* Gallery */}
-                    {project.gallery && project.gallery.length > 0 && (
+                    {project.gallery_urls && project.gallery_urls.length > 0 && (
                         <div className="overflow-hidden rounded-2xl border border-border/50 bg-card/50 p-6 backdrop-blur-sm">
                             <h2 className="mb-4 text-lg font-bold">Galería</h2>
                             <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
-                                {project.gallery.map((image, index) => (
+                                {project.gallery_urls.map((imageUrl, index) => (
                                     <div key={index} className="group relative aspect-video overflow-hidden rounded-xl border border-border/50">
-                                        <img src={`/storage/${image}`} alt={`Gallery ${index + 1}`} className="size-full object-cover transition-transform duration-300 group-hover:scale-110" />
+                                        <img src={imageUrl} alt={`Gallery ${index + 1}`} className="size-full object-cover transition-transform duration-300 group-hover:scale-110" />
                                     </div>
                                 ))}
                             </div>

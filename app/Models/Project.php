@@ -2,16 +2,25 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Storage;
 
 class Project extends Model
 {
     use HasFactory, SoftDeletes;
+
+    protected $appends = [
+        'featured_image_url',
+        'thumbnail_url',
+        'gallery_urls',
+        'client_logo_url',
+    ];
 
     protected $fillable = [
         'user_id',
@@ -148,5 +157,41 @@ class Project extends Model
         }
 
         return null;
+    }
+
+    protected function featuredImageUrl(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->featured_image
+                ? Storage::url($this->featured_image)
+                : null,
+        );
+    }
+
+    protected function thumbnailUrl(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->thumbnail
+                ? Storage::url($this->thumbnail)
+                : null,
+        );
+    }
+
+    protected function galleryUrls(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => is_array($this->gallery)
+                ? array_map(fn ($image) => Storage::url($image), $this->gallery)
+                : [],
+        );
+    }
+
+    protected function clientLogoUrl(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->client_logo
+                ? Storage::url($this->client_logo)
+                : null,
+        );
     }
 }

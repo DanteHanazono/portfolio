@@ -4,9 +4,19 @@ export type Technology = {
     slug: string;
     type: string | null;
     icon: string | null;
+    icon_class: string | null;
     color: string | null;
     order: number;
     is_featured: boolean;
+};
+
+export type Feature = {
+    id: number;
+    project_id: number;
+    title: string;
+    description: string | null;
+    icon: string | null;
+    order: number;
 };
 
 export type Project = {
@@ -24,6 +34,7 @@ export type Project = {
     github_url: string | null;
     client_name: string | null;
     client_logo: string | null;
+    client_url: string | null;
     client_website: string | null;
     client_testimonial: string | null;
     client_position: string | null;
@@ -42,7 +53,13 @@ export type Project = {
     published_at: string | null;
     created_at: string;
     updated_at: string;
+    featured_image_url?: string | null;
+    thumbnail_url?: string | null;
+    gallery_urls?: string[];
+    client_logo_url?: string | null;
     technologies?: Technology[];
+    features?: Feature[];
+    published_testimonials?: Testimonial[];
     testimonials_count?: number;
     user?: {
         id: number;
