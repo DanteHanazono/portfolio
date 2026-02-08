@@ -3,6 +3,7 @@
 use App\Http\Controllers\ContactMessageController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\TechnologyController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -27,6 +28,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('projects/{project}/toggle-featured', [ProjectController::class, 'toggleFeatured'])->name('projects.toggle-featured');
     Route::post('projects/{project}/toggle-published', [ProjectController::class, 'togglePublished'])->name('projects.toggle-published');
     Route::post('projects/reorder', [ProjectController::class, 'reorder'])->name('projects.reorder');
+
+    Route::resource('technologies', TechnologyController::class);
+    Route::post('technologies/{technology}/toggle-featured', [TechnologyController::class, 'toggleFeatured'])->name('technologies.toggle-featured');
+    Route::post('technologies/reorder', [TechnologyController::class, 'reorder'])->name('technologies.reorder');
 });
 
 require __DIR__.'/settings.php';

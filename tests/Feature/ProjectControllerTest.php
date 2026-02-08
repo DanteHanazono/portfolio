@@ -35,7 +35,7 @@ class ProjectControllerTest extends TestCase
 
         $response->assertOk();
         $response->assertInertia(
-            fn ($page) => $page
+            fn($page) => $page
                 ->component('Projects/Index')
                 ->has('projects')
                 ->has('technologies')
@@ -60,7 +60,7 @@ class ProjectControllerTest extends TestCase
 
         $response->assertOk();
         $response->assertInertia(
-            fn ($page) => $page
+            fn($page) => $page
                 ->component('Projects/Index')
                 ->has('projects.data', 1)
         );
@@ -76,7 +76,7 @@ class ProjectControllerTest extends TestCase
 
         $response->assertOk();
         $response->assertInertia(
-            fn ($page) => $page
+            fn($page) => $page
                 ->component('Projects/Index')
                 ->has('projects.data', 1)
         );
@@ -92,7 +92,7 @@ class ProjectControllerTest extends TestCase
 
         $response->assertOk();
         $response->assertInertia(
-            fn ($page) => $page
+            fn($page) => $page
                 ->component('Projects/Index')
                 ->has('projects.data', 1)
         );
@@ -119,18 +119,36 @@ class ProjectControllerTest extends TestCase
 
         $response->assertOk();
         $response->assertInertia(
-            fn ($page) => $page
+            fn($page) => $page
                 ->component('Projects/Show')
                 ->has('project')
         );
     }
 
-    public function test_show_page_increments_views(): void
+    public function test_show_page_does_not_increment_views_in_dashboard(): void
     {
         $project = Project::factory()->for($this->user)->create(['views_count' => 5]);
 
         $this->actingAs($this->user)
             ->get(route('projects.show', $project->slug));
+
+        $this->assertDatabaseHas('projects', [
+            'id' => $project->id,
+            'views_count' => 5,
+        ]);
+    }
+
+    public function test_public_show_page_increments_views(): void
+    {
+        $project = Project::factory()
+            ->for($this->user)
+            ->create([
+                'views_count' => 5,
+                'is_published' => true,
+                'published_at' => now(),
+            ]);
+
+        $this->get(route('project.show', $project->slug));
 
         $this->assertDatabaseHas('projects', [
             'id' => $project->id,
@@ -152,7 +170,7 @@ class ProjectControllerTest extends TestCase
 
         $response->assertOk();
         $response->assertInertia(
-            fn ($page) => $page
+            fn($page) => $page
                 ->component('Projects/Create')
                 ->has('technologies')
         );
@@ -244,7 +262,7 @@ class ProjectControllerTest extends TestCase
 
         $response->assertOk();
         $response->assertInertia(
-            fn ($page) => $page
+            fn($page) => $page
                 ->component('Projects/Edit')
                 ->has('project')
                 ->has('technologies')
@@ -347,10 +365,15 @@ class ProjectControllerTest extends TestCase
 
     public function test_project_can_be_liked(): void
     {
-        $project = Project::factory()->for($this->user)->create(['likes_count' => 10]);
+        $project = Project::factory()
+            ->for($this->user)
+            ->create([
+                'likes_count' => 10,
+                'is_published' => true,
+                'published_at' => now(),
+            ]);
 
-        $response = $this->actingAs($this->user)
-            ->post(route('projects.like', $project));
+        $response = $this->post(route('project.like', $project->slug));
 
         $response->assertRedirect();
 
@@ -380,5 +403,35 @@ class ProjectControllerTest extends TestCase
         $this->assertDatabaseHas('projects', ['id' => $project3->id, 'order' => 1]);
         $this->assertDatabaseHas('projects', ['id' => $project1->id, 'order' => 2]);
         $this->assertDatabaseHas('projects', ['id' => $project2->id, 'order' => 3]);
+    }
+
+    public function test_project_images_are_preserved_when_not_updated(): void
+    {
+        Storage::fake('public');
+
+        $project = Project::factory()->for($this->user)->create([
+            'featured_image' => 'projects/featured/test-image.jpg',
+            'thumbnail' => 'projects/thumbnails/test-thumb.jpg',
+        ]);
+
+        $response = $this->actingAs($this->user)
+            ->put(route('projects.update', $project), [
+                'title' => 'Updated Title',
+                'slug' => $project->slug,
+                'description' => 'Updated description',
+                'status' => 'completed',
+                'technologies' => [],
+                'is_featured' => false,
+                'is_published' => false,
+            ]);
+
+        $response->assertRedirect();
+
+        // Las imágenes deben conservarse
+        $this->assertDatabaseHas('projects', [
+            'id' => $project->id,
+            'featured_image' => 'projects/featured/test-image.jpg',
+            'thumbnail' => 'projects/thumbnails/test-thumb.jpg',
+        ]);
     }
 }

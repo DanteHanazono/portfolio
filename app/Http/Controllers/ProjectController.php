@@ -58,8 +58,8 @@ class ProjectController extends Controller
     {
         $project = Project::with([
             'technologies',
-            'features' => fn ($q) => $q->ordered(),
-            'publishedTestimonials' => fn ($q) => $q->ordered(),
+            'features' => fn($q) => $q->ordered(),
+            'publishedTestimonials' => fn($q) => $q->ordered(),
             'user',
         ])->where('slug', $slug)->firstOrFail();
 
@@ -81,8 +81,8 @@ class ProjectController extends Controller
         $project = Project::published()
             ->with([
                 'technologies',
-                'features' => fn ($q) => $q->ordered(),
-                'publishedTestimonials' => fn ($q) => $q->ordered(),
+                'features' => fn($q) => $q->ordered(),
+                'publishedTestimonials' => fn($q) => $q->ordered(),
                 'user',
             ])
             ->where('slug', $slug)
@@ -186,7 +186,7 @@ class ProjectController extends Controller
     {
         $validated = $request->validate([
             'title' => 'required|string|max:255',
-            'slug' => 'nullable|string|unique:projects,slug,'.$project->id,
+            'slug' => 'nullable|string|unique:projects,slug,' . $project->id,
             'subtitle' => 'nullable|string|max:500',
             'description' => 'required|string',
             'content' => 'nullable|string',
@@ -219,6 +219,9 @@ class ProjectController extends Controller
             }
             $validated['featured_image'] = $request->file('featured_image')
                 ->store('projects/featured', 'public');
+        } else {
+            // No se subió nueva imagen ni se marcó para eliminar, mantener la existente
+            unset($validated['featured_image']);
         }
 
         if ($request->boolean('remove_thumbnail') && $project->thumbnail) {
@@ -230,6 +233,9 @@ class ProjectController extends Controller
             }
             $validated['thumbnail'] = $request->file('thumbnail')
                 ->store('projects/thumbnails', 'public');
+        } else {
+            // No se subió nueva imagen ni se marcó para eliminar, mantener la existente
+            unset($validated['thumbnail']);
         }
 
         $gallery = $request->input('existing_gallery', []);

@@ -1,5 +1,5 @@
 import { Link } from '@inertiajs/react';
-import { BookOpen, Code2, Folder, Globe, LayoutGrid } from 'lucide-react';
+import { BookOpen, Code2, Cpu, Folder, Globe, LayoutGrid } from 'lucide-react';
 import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
 import * as projectsRoutes from '@/routes/projects';
+import * as technologiesRoutes from '@/routes/technologies';
 import type { NavItem } from '@/types';
 import AppLogoIcon from './app-logo-icon';
 
@@ -26,6 +27,11 @@ const mainNavItems: NavItem[] = [
         title: 'Proyectos',
         href: projectsRoutes.index.url(),
         icon: Code2,
+    },
+    {
+        title: 'Tecnologías',
+        href: technologiesRoutes.index.url(),
+        icon: Cpu,
     },
 ];
 

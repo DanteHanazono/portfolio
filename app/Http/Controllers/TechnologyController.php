@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Technology;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
-use Illuminate\Support\Str;
 
 class TechnologyController extends Controller
 {
@@ -87,7 +87,7 @@ class TechnologyController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'slug' => 'nullable|string|unique:technologies,slug,' . $technology->id,
+            'slug' => 'nullable|string|unique:technologies,slug,'.$technology->id,
             'type' => 'nullable|string|max:255',
             'icon' => 'nullable|string|max:255',
             'color' => 'nullable|string|max:7',
@@ -122,7 +122,7 @@ class TechnologyController extends Controller
     public function toggleFeatured(Technology $technology): RedirectResponse
     {
         $technology->update([
-            'is_featured' => !$technology->is_featured,
+            'is_featured' => ! $technology->is_featured,
         ]);
 
         return back()->with('success', 'Estado destacado actualizado');
