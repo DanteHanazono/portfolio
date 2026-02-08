@@ -1,5 +1,5 @@
 import { Link } from '@inertiajs/react';
-import { BookOpen, Code2, Cpu, Folder, Globe, LayoutGrid } from 'lucide-react';
+import { BookOpen, Briefcase, Code2, Cpu, Folder, Globe, LayoutGrid } from 'lucide-react';
 import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
@@ -12,6 +12,7 @@ import {
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
+import * as experiencesRoutes from '@/routes/experiences';
 import * as projectsRoutes from '@/routes/projects';
 import * as technologiesRoutes from '@/routes/technologies';
 import type { NavItem } from '@/types';
@@ -32,6 +33,11 @@ const mainNavItems: NavItem[] = [
         title: 'Tecnologías',
         href: technologiesRoutes.index.url(),
         icon: Cpu,
+    },
+    {
+        title: 'Experiencia',
+        href: experiencesRoutes.index.url(),
+        icon: Briefcase,
     },
 ];
 

@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class Experience extends Model
 {
@@ -25,6 +27,8 @@ class Experience extends Model
         'order',
     ];
 
+    protected $appends = ['company_logo_url'];
+
     protected function casts(): array
     {
         return [
@@ -35,6 +39,13 @@ class Experience extends Model
             'is_current' => 'boolean',
             'order' => 'integer',
         ];
+    }
+
+    protected function companyLogoUrl(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->company_logo ? Storage::url($this->company_logo) : null
+        );
     }
 
     public function scopeCurrent($query)

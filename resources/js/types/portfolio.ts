@@ -97,16 +97,21 @@ export type Experience = {
     title: string;
     company: string;
     company_logo: string | null;
+    company_logo_url?: string | null;
     company_url: string | null;
     location: string | null;
     employment_type: string | null;
     description: string | null;
-    responsibilities: string | null;
-    achievements: string | null;
+    responsibilities: string[] | null;
+    achievements: string[] | null;
     start_date: string;
     end_date: string | null;
     is_current: boolean;
     order: number;
+    duration?: string;
+    period?: string;
+    created_at: string;
+    updated_at: string;
 };
 
 export type Education = {

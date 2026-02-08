@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ContactMessageController;
+use App\Http\Controllers\ExperienceController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\TechnologyController;
@@ -32,6 +33,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('technologies', TechnologyController::class);
     Route::post('technologies/{technology}/toggle-featured', [TechnologyController::class, 'toggleFeatured'])->name('technologies.toggle-featured');
     Route::post('technologies/reorder', [TechnologyController::class, 'reorder'])->name('technologies.reorder');
+
+    Route::resource('experiences', ExperienceController::class);
+    Route::post('experiences/reorder', [ExperienceController::class, 'reorder'])->name('experiences.reorder');
 });
 
 require __DIR__.'/settings.php';
