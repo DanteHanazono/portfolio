@@ -92,6 +92,8 @@ export type Testimonial = {
     is_published: boolean;
     order: number;
     project?: Project | null;
+    created_at: string;
+    updated_at: string;
 };
 
 export type Experience = {

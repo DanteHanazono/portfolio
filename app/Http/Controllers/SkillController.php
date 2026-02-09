@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Http\RedirectResponse;
-use Inertia\Inertia;
 use App\Models\Skill;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Inertia\Inertia;
 use Inertia\Response;
 
 class SkillController extends Controller
@@ -107,7 +107,7 @@ class SkillController extends Controller
     public function toggleHighlighted(Skill $skill): RedirectResponse
     {
         $skill->update([
-            'is_highlighted' => !$skill->is_highlighted,
+            'is_highlighted' => ! $skill->is_highlighted,
         ]);
 
         return back()->with('success', 'Estado destacado actualizado');

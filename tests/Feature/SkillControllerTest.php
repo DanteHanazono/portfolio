@@ -33,7 +33,7 @@ class SkillControllerTest extends TestCase
 
         $response->assertOk();
         $response->assertInertia(
-            fn($page) => $page
+            fn ($page) => $page
                 ->component('Skills/Index')
                 ->has('skills', 3)
         );
@@ -48,7 +48,7 @@ class SkillControllerTest extends TestCase
         $response = $this->actingAs($this->user)->get(route('skills.index'));
 
         $response->assertInertia(
-            fn($page) => $page
+            fn ($page) => $page
                 ->where('skills.0.name', 'Second')
                 ->where('skills.1.name', 'First')
                 ->where('skills.2.name', 'Third')
@@ -63,7 +63,7 @@ class SkillControllerTest extends TestCase
         $response = $this->actingAs($this->user)->get(route('skills.index', ['category' => 'Frontend']));
 
         $response->assertInertia(
-            fn($page) => $page
+            fn ($page) => $page
                 ->has('skills', 1)
                 ->where('skills.0.name', 'React')
         );
@@ -78,7 +78,7 @@ class SkillControllerTest extends TestCase
         $response = $this->actingAs($this->user)->get(route('skills.index', ['search' => 'React']));
 
         $response->assertInertia(
-            fn($page) => $page
+            fn ($page) => $page
                 ->has('skills', 1)
                 ->where('skills.0.name', 'React')
         );
@@ -95,7 +95,7 @@ class SkillControllerTest extends TestCase
         $response = $this->actingAs($this->user)->get(route('skills.create'));
 
         $response->assertOk();
-        $response->assertInertia(fn($page) => $page->component('Skills/Create'));
+        $response->assertInertia(fn ($page) => $page->component('Skills/Create'));
     }
 
     public function test_guests_cannot_create_skill(): void
@@ -187,7 +187,7 @@ class SkillControllerTest extends TestCase
 
         $response->assertOk();
         $response->assertInertia(
-            fn($page) => $page
+            fn ($page) => $page
                 ->component('Skills/Show')
                 ->has('skill')
                 ->where('skill.id', $skill->id)
@@ -210,7 +210,7 @@ class SkillControllerTest extends TestCase
 
         $response->assertOk();
         $response->assertInertia(
-            fn($page) => $page
+            fn ($page) => $page
                 ->component('Skills/Edit')
                 ->where('skill.id', $skill->id)
         );

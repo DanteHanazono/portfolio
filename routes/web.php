@@ -8,6 +8,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\SkillController;
 use App\Http\Controllers\TechnologyController;
+use App\Http\Controllers\TestimonialController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -49,6 +50,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::resource('certifications', CertificationController::class);
     Route::post('certifications/reorder', [CertificationController::class, 'reorder'])->name('certifications.reorder');
+
+    Route::resource('testimonials', TestimonialController::class)->except(['index', 'create']);
+    Route::get('admin/testimonials', [TestimonialController::class, 'index'])->name('testimonials.index');
+    Route::get('admin/testimonials/create', [TestimonialController::class, 'create'])->name('testimonials.create');
+    Route::post('testimonials/{testimonial}/toggle-featured', [TestimonialController::class, 'toggleFeatured'])->name('testimonials.toggle-featured');
+    Route::post('testimonials/{testimonial}/toggle-published', [TestimonialController::class, 'togglePublished'])->name('testimonials.toggle-published');
+    Route::post('testimonials/reorder', [TestimonialController::class, 'reorder'])->name('testimonials.reorder');
 });
 
 require __DIR__.'/settings.php';

@@ -1,5 +1,5 @@
 import { Link } from '@inertiajs/react';
-import { Award, BookOpen, Briefcase, Code2, Cpu, Folder, GraduationCap, Globe, LayoutGrid, Zap } from 'lucide-react';
+import { Award, BookOpen, Briefcase, Code2, Cpu, Folder, GraduationCap, Globe, LayoutGrid, MessageSquare, Zap } from 'lucide-react';
 import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
@@ -18,6 +18,7 @@ import * as experiencesRoutes from '@/routes/experiences';
 import * as projectsRoutes from '@/routes/projects';
 import * as skillsRoutes from '@/routes/skills';
 import * as technologiesRoutes from '@/routes/technologies';
+import * as testimonialsRoutes from '@/routes/testimonials';
 import type { NavItem } from '@/types';
 import AppLogoIcon from './app-logo-icon';
 
@@ -57,20 +58,25 @@ const mainNavItems: NavItem[] = [
         href: certificationsRoutes.index.url(),
         icon: Award,
     },
+    {
+        title: 'Testimonios',
+        href: testimonialsRoutes.index.url(),
+        icon: MessageSquare,
+    },
 ];
 
-const footerNavItems: NavItem[] = [
-    {
-        title: 'Ver Portafolio',
-        href: '/',
-        icon: Globe,
-    },
-    {
-        title: 'Documentación',
-        href: 'https://laravel.com/docs',
-        icon: BookOpen,
-    },
-];
+// const footerNavItems: NavItem[] = [
+//     {
+//         title: 'Ver Portafolio',
+//         href: '/',
+//         icon: Globe,
+//     },
+//     {
+//         title: 'Documentación',
+//         href: 'https://laravel.com/docs',
+//         icon: BookOpen,
+//     },
+// ];
 
 export function AppSidebar() {
     return (
@@ -100,7 +106,7 @@ export function AppSidebar() {
             </SidebarContent>
 
             <SidebarFooter className="border-t border-border/50">
-                <NavFooter items={footerNavItems} className="mt-0" />
+                {/* <NavFooter items={footerNavItems} className="mt-0" /> */}
                 <div className="px-3 pb-3">
                     <NavUser />
                 </div>
