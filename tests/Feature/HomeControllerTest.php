@@ -22,7 +22,7 @@ class HomeControllerTest extends TestCase
 
         $response->assertOk();
         $response->assertInertia(
-            fn ($page) => $page
+            fn($page) => $page
                 ->component('Home')
                 ->has('featuredProjects')
                 ->has('highlightedSkills')
@@ -40,7 +40,7 @@ class HomeControllerTest extends TestCase
 
         $response->assertOk();
         $response->assertInertia(
-            fn ($page) => $page
+            fn($page) => $page
                 ->component('Home')
                 ->where('featuredProjects.0.id', $featured->id)
         );
@@ -55,7 +55,7 @@ class HomeControllerTest extends TestCase
 
         $response->assertOk();
         $response->assertInertia(
-            fn ($page) => $page
+            fn($page) => $page
                 ->component('Home')
                 ->has('highlightedSkills', 1)
         );
@@ -70,11 +70,11 @@ class HomeControllerTest extends TestCase
 
         $response->assertOk();
         $response->assertInertia(
-            fn ($page) => $page
+            fn($page) => $page
                 ->component('Home')
                 ->has(
                     'stats',
-                    fn ($stats) => $stats
+                    fn($stats) => $stats
                         ->where('projects_completed', 1)
                         ->where('technologies_used', 3)
                         ->has('years_experience')
@@ -89,7 +89,7 @@ class HomeControllerTest extends TestCase
 
         $response->assertOk();
         $response->assertInertia(
-            fn ($page) => $page
+            fn($page) => $page
                 ->component('About')
                 ->has('experiences')
                 ->has('education')
@@ -107,7 +107,7 @@ class HomeControllerTest extends TestCase
 
         $response->assertOk();
         $response->assertInertia(
-            fn ($page) => $page
+            fn($page) => $page
                 ->component('About')
                 ->has('experiences', 2)
         );
@@ -121,7 +121,7 @@ class HomeControllerTest extends TestCase
 
         $response->assertOk();
         $response->assertInertia(
-            fn ($page) => $page
+            fn($page) => $page
                 ->component('About')
                 ->has('education', 2)
         );
@@ -135,7 +135,7 @@ class HomeControllerTest extends TestCase
 
         $response->assertOk();
         $response->assertInertia(
-            fn ($page) => $page
+            fn($page) => $page
                 ->component('About')
                 ->has('certifications', 1)
         );
@@ -147,7 +147,7 @@ class HomeControllerTest extends TestCase
 
         $response->assertOk();
         $response->assertInertia(
-            fn ($page) => $page
+            fn($page) => $page
                 ->component('Portfolio')
                 ->has('projects')
                 ->has('technologies')
@@ -164,7 +164,7 @@ class HomeControllerTest extends TestCase
 
         $response->assertOk();
         $response->assertInertia(
-            fn ($page) => $page
+            fn($page) => $page
                 ->component('Portfolio')
                 ->has('projects.data', 3)
         );
@@ -181,7 +181,7 @@ class HomeControllerTest extends TestCase
 
         $response->assertOk();
         $response->assertInertia(
-            fn ($page) => $page
+            fn($page) => $page
                 ->component('Portfolio')
                 ->has('projects.data', 1)
         );
@@ -189,11 +189,11 @@ class HomeControllerTest extends TestCase
 
     public function test_skills_page_renders_successfully(): void
     {
-        $response = $this->get(route('skills'));
+        $response = $this->get(route('habilidades'));
 
         $response->assertOk();
         $response->assertInertia(
-            fn ($page) => $page
+            fn($page) => $page
                 ->component('Skills')
                 ->has('skills')
                 ->has('groupedSkills')
@@ -206,11 +206,11 @@ class HomeControllerTest extends TestCase
         Skill::factory()->create(['category' => 'Frontend']);
         Skill::factory()->create(['category' => 'Backend']);
 
-        $response = $this->get(route('skills'));
+        $response = $this->get(route('habilidades'));
 
         $response->assertOk();
         $response->assertInertia(
-            fn ($page) => $page
+            fn($page) => $page
                 ->component('Skills')
                 ->has('groupedSkills.Frontend', 1)
                 ->has('groupedSkills.Backend', 1)
@@ -223,7 +223,7 @@ class HomeControllerTest extends TestCase
 
         $response->assertOk();
         $response->assertInertia(
-            fn ($page) => $page
+            fn($page) => $page
                 ->component('Testimonials')
                 ->has('testimonials')
         );
@@ -238,7 +238,7 @@ class HomeControllerTest extends TestCase
 
         $response->assertOk();
         $response->assertInertia(
-            fn ($page) => $page
+            fn($page) => $page
                 ->component('Testimonials')
                 ->has('testimonials', 2)
         );

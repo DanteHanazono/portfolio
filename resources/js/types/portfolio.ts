@@ -75,6 +75,8 @@ export type Skill = {
     years_experience: number | null;
     is_highlighted: boolean;
     order: number;
+    created_at: string;
+    updated_at: string;
 };
 
 export type Testimonial = {

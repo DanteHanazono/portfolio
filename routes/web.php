@@ -5,6 +5,7 @@ use App\Http\Controllers\EducationController;
 use App\Http\Controllers\ExperienceController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\SkillController;
 use App\Http\Controllers\TechnologyController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -12,7 +13,7 @@ use Inertia\Inertia;
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/about', [HomeController::class, 'about'])->name('about');
 Route::get('/portfolio', [HomeController::class, 'portfolio'])->name('portfolio');
-Route::get('/skills', [HomeController::class, 'skills'])->name('skills');
+Route::get('/habilidades', [HomeController::class, 'skills'])->name('habilidades');
 Route::get('/testimonials', [HomeController::class, 'testimonials'])->name('testimonials');
 
 Route::get('/contact', [ContactMessageController::class, 'create'])->name('contact.create');
@@ -40,6 +41,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::resource('education', EducationController::class);
     Route::post('education/reorder', [EducationController::class, 'reorder'])->name('education.reorder');
+
+    Route::resource('skills', SkillController::class);
+    Route::post('skills/{skill}/toggle-highlighted', [SkillController::class, 'toggleHighlighted'])->name('skills.toggle-highlighted');
+    Route::post('skills/reorder', [SkillController::class, 'reorder'])->name('skills.reorder');
 });
 
-require __DIR__.'/settings.php';
+require __DIR__ . '/settings.php';
