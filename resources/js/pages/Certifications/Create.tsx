@@ -55,10 +55,9 @@ export default function Create() {
                 {/* Header */}
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                        <Button variant="ghost" size="sm" asChild>
+                        <Button asChild variant="outline" size="icon" className="shrink-0">
                             <Link href={certificationsRoutes.index.url()}>
-                                <ArrowLeft className="mr-2 size-4" />
-                                Volver
+                                <ArrowLeft className="size-4" />
                             </Link>
                         </Button>
                         <div>

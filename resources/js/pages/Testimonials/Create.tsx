@@ -52,10 +52,9 @@ export default function Create({ projects }: TestimonialsCreateProps) {
             <div className="space-y-6 p-6">
                 {/* Header */}
                 <div className="flex items-center gap-4">
-                    <Button variant="ghost" size="sm" asChild>
+                    <Button asChild variant="outline" size="icon" className="shrink-0">
                         <Link href={testimonialsRoutes.index.url()}>
-                            <ArrowLeft className="mr-2 size-4" />
-                            Volver
+                            <ArrowLeft className="size-4" />
                         </Link>
                     </Button>
                     <div>
@@ -157,10 +156,9 @@ export default function Create({ projects }: TestimonialsCreateProps) {
                                 <Label htmlFor="project_id">Proyecto Asociado (Opcional)</Label>
                                 <Select value={data.project_id} onValueChange={(value) => setData('project_id', value)}>
                                     <SelectTrigger className="mt-2">
-                                        <SelectValue placeholder="Selecciona un proyecto" />
+                                        <SelectValue placeholder="Selecciona un proyecto (opcional)" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="">Sin proyecto</SelectItem>
                                         {projects.map((project) => (
                                             <SelectItem key={project.id} value={project.id.toString()}>
                                                 {project.title}

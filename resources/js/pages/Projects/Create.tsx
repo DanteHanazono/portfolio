@@ -112,12 +112,13 @@ export default function Create({ technologies }: ProjectsCreateProps) {
 
             {/* Header */}
             <div className="mb-8">
-                <Button variant="ghost" size="sm" asChild className="mb-4 gap-2">
-                    <Link href={projectsRoutes.index.url()}>
-                        <ArrowLeft className="size-4" />
-                        Volver a proyectos
-                    </Link>
-                </Button>
+                <div className="mb-4 flex items-center gap-4">
+                    <Button asChild variant="outline" size="icon" className="shrink-0">
+                        <Link href={projectsRoutes.index.url()}>
+                            <ArrowLeft className="size-4" />
+                        </Link>
+                    </Button>
+                </div>
 
                 <div className="flex items-start gap-4">
                     <div className="flex size-14 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-600 via-blue-600 to-cyan-600 text-white shadow-lg">
