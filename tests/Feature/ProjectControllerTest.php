@@ -35,7 +35,7 @@ class ProjectControllerTest extends TestCase
 
         $response->assertOk();
         $response->assertInertia(
-            fn($page) => $page
+            fn ($page) => $page
                 ->component('Projects/Index')
                 ->has('projects')
                 ->has('technologies')
@@ -60,7 +60,7 @@ class ProjectControllerTest extends TestCase
 
         $response->assertOk();
         $response->assertInertia(
-            fn($page) => $page
+            fn ($page) => $page
                 ->component('Projects/Index')
                 ->has('projects.data', 1)
         );
@@ -76,7 +76,7 @@ class ProjectControllerTest extends TestCase
 
         $response->assertOk();
         $response->assertInertia(
-            fn($page) => $page
+            fn ($page) => $page
                 ->component('Projects/Index')
                 ->has('projects.data', 1)
         );
@@ -92,7 +92,7 @@ class ProjectControllerTest extends TestCase
 
         $response->assertOk();
         $response->assertInertia(
-            fn($page) => $page
+            fn ($page) => $page
                 ->component('Projects/Index')
                 ->has('projects.data', 1)
         );
@@ -119,7 +119,7 @@ class ProjectControllerTest extends TestCase
 
         $response->assertOk();
         $response->assertInertia(
-            fn($page) => $page
+            fn ($page) => $page
                 ->component('Projects/Show')
                 ->has('project')
         );
@@ -170,7 +170,7 @@ class ProjectControllerTest extends TestCase
 
         $response->assertOk();
         $response->assertInertia(
-            fn($page) => $page
+            fn ($page) => $page
                 ->component('Projects/Create')
                 ->has('technologies')
         );
@@ -262,7 +262,7 @@ class ProjectControllerTest extends TestCase
 
         $response->assertOk();
         $response->assertInertia(
-            fn($page) => $page
+            fn ($page) => $page
                 ->component('Projects/Edit')
                 ->has('project')
                 ->has('technologies')

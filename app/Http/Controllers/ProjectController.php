@@ -58,8 +58,8 @@ class ProjectController extends Controller
     {
         $project = Project::with([
             'technologies',
-            'features' => fn($q) => $q->ordered(),
-            'publishedTestimonials' => fn($q) => $q->ordered(),
+            'features' => fn ($q) => $q->ordered(),
+            'publishedTestimonials' => fn ($q) => $q->ordered(),
             'user',
         ])->where('slug', $slug)->firstOrFail();
 
@@ -81,8 +81,8 @@ class ProjectController extends Controller
         $project = Project::published()
             ->with([
                 'technologies',
-                'features' => fn($q) => $q->ordered(),
-                'publishedTestimonials' => fn($q) => $q->ordered(),
+                'features' => fn ($q) => $q->ordered(),
+                'publishedTestimonials' => fn ($q) => $q->ordered(),
                 'user',
             ])
             ->where('slug', $slug)
@@ -186,7 +186,7 @@ class ProjectController extends Controller
     {
         $validated = $request->validate([
             'title' => 'required|string|max:255',
-            'slug' => 'nullable|string|unique:projects,slug,' . $project->id,
+            'slug' => 'nullable|string|unique:projects,slug,'.$project->id,
             'subtitle' => 'nullable|string|max:500',
             'description' => 'required|string',
             'content' => 'nullable|string',

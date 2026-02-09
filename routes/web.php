@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ContactMessageController;
+use App\Http\Controllers\EducationController;
 use App\Http\Controllers\ExperienceController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProjectController;
@@ -36,6 +37,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::resource('experiences', ExperienceController::class);
     Route::post('experiences/reorder', [ExperienceController::class, 'reorder'])->name('experiences.reorder');
+
+    Route::resource('education', EducationController::class);
+    Route::post('education/reorder', [EducationController::class, 'reorder'])->name('education.reorder');
 });
 
 require __DIR__.'/settings.php';

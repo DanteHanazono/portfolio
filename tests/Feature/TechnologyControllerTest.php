@@ -34,7 +34,7 @@ class TechnologyControllerTest extends TestCase
 
         $response->assertOk();
         $response->assertInertia(
-            fn($page) => $page
+            fn ($page) => $page
                 ->component('Technologies/Index')
                 ->has('technologies')
                 ->has('types')
@@ -52,7 +52,7 @@ class TechnologyControllerTest extends TestCase
 
         $response->assertOk();
         $response->assertInertia(
-            fn($page) => $page
+            fn ($page) => $page
                 ->component('Technologies/Index')
                 ->has('technologies.data', 1)
         );
@@ -68,7 +68,7 @@ class TechnologyControllerTest extends TestCase
 
         $response->assertOk();
         $response->assertInertia(
-            fn($page) => $page
+            fn ($page) => $page
                 ->component('Technologies/Index')
                 ->has('technologies.data', 1)
         );
@@ -92,7 +92,7 @@ class TechnologyControllerTest extends TestCase
 
         $response->assertOk();
         $response->assertInertia(
-            fn($page) => $page
+            fn ($page) => $page
                 ->component('Technologies/Show')
                 ->has('technology')
                 ->has('projects')
@@ -113,7 +113,7 @@ class TechnologyControllerTest extends TestCase
 
         $response->assertOk();
         $response->assertInertia(
-            fn($page) => $page
+            fn ($page) => $page
                 ->component('Technologies/Create')
         );
     }
@@ -202,7 +202,7 @@ class TechnologyControllerTest extends TestCase
 
         $response->assertOk();
         $response->assertInertia(
-            fn($page) => $page
+            fn ($page) => $page
                 ->component('Technologies/Edit')
                 ->has('technology')
         );
@@ -325,7 +325,7 @@ class TechnologyControllerTest extends TestCase
 
         $response->assertOk();
         $response->assertInertia(
-            fn($page) => $page
+            fn ($page) => $page
                 ->component('Technologies/Index')
                 ->has('technologies.data.0.projects_count')
         );
@@ -356,7 +356,7 @@ class TechnologyControllerTest extends TestCase
 
         $response->assertOk();
         $response->assertInertia(
-            fn($page) => $page
+            fn ($page) => $page
                 ->component('Technologies/Show')
                 ->has('projects.data', 1)
         );

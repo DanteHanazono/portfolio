@@ -81,40 +81,57 @@ export default function About({ experiences, education, certifications, skills, 
                                 <div className="absolute -left-[calc(2.5rem+5px)] flex size-4 items-center justify-center rounded-full border-2 border-blue-500 bg-background ring-4 ring-blue-500/10" style={{ marginTop: '4px' }} />
 
                                 <div className="group rounded-2xl border border-border/50 bg-card/50 p-6 backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-border hover:shadow-xl">
-                                    <div className="flex flex-wrap items-start gap-x-4 gap-y-2">
-                                        <h3 className="text-lg font-bold">{exp.title}</h3>
-                                        {exp.is_current && (
-                                            <Badge className="bg-gradient-to-r from-emerald-500 to-teal-500 text-xs text-white">
-                                                Actual
-                                            </Badge>
+                                    <div className="flex gap-4">
+                                        {/* Company Logo */}
+                                        {exp.company_logo_url ? (
+                                            <img
+                                                src={exp.company_logo_url}
+                                                alt={exp.company}
+                                                className="size-12 shrink-0 rounded-lg border border-border/50 object-cover"
+                                            />
+                                        ) : (
+                                            <div className="grid size-12 shrink-0 place-items-center rounded-lg border border-border/50 bg-muted">
+                                                <Briefcase className="size-5 text-muted-foreground" />
+                                            </div>
                                         )}
+
+                                        <div className="flex-1">
+                                            <div className="flex flex-wrap items-start gap-x-4 gap-y-2">
+                                                <h3 className="text-lg font-bold">{exp.title}</h3>
+                                                {exp.is_current && (
+                                                    <Badge className="bg-gradient-to-r from-emerald-500 to-teal-500 text-xs text-white">
+                                                        Actual
+                                                    </Badge>
+                                                )}
+                                            </div>
+                                            <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-sm text-muted-foreground">
+                                                <span className="font-semibold text-foreground/80">{exp.company}</span>
+                                                {exp.location && (
+                                                    <span className="flex items-center gap-1">
+                                                        <MapPin className="size-3.5" />
+                                                        {exp.location}
+                                                    </span>
+                                                )}
+                                                <span className="flex items-center gap-1">
+                                                    <Calendar className="size-3.5" />
+                                                    {formatDate(exp.start_date)} - {exp.is_current ? 'Presente' : exp.end_date ? formatDate(exp.end_date) : ''}
+                                                </span>
+                                                {exp.employment_type && (
+                                                    <Badge variant="outline" className="text-xs">{exp.employment_type}</Badge>
+                                                )}
+                                            </div>
+                                            {exp.description && (
+                                                <p className="mt-4 text-sm leading-relaxed text-muted-foreground">{exp.description}</p>
+                                            )}
+                                            {exp.company_url && (
+                                                <Button asChild variant="link" size="sm" className="mt-2 h-auto p-0">
+                                                    <a href={exp.company_url} target="_blank" rel="noopener noreferrer">
+                                                        Visitar empresa <ExternalLink className="size-3" />
+                                                    </a>
+                                                </Button>
+                                            )}
+                                        </div>
                                     </div>
-                                    <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-sm text-muted-foreground">
-                                        <span className="font-semibold text-foreground/80">{exp.company}</span>
-                                        {exp.location && (
-                                            <span className="flex items-center gap-1">
-                                                <MapPin className="size-3.5" />
-                                                {exp.location}
-                                            </span>
-                                        )}
-                                        <span className="flex items-center gap-1">
-                                            <Calendar className="size-3.5" />
-                                            {formatDate(exp.start_date)} - {exp.is_current ? 'Presente' : exp.end_date ? formatDate(exp.end_date) : ''}
-                                        </span>
-                                        {exp.employment_type && (
-                                            <Badge variant="outline" className="text-xs">{exp.employment_type}</Badge>
-                                        )}
-                                    </div>
-                                    {exp.description && (
-                                        <p className="mt-4 text-sm leading-relaxed text-muted-foreground">{exp.description}</p>
-                                    )}
-                                    {exp.company_url && (
-                                        <Button asChild variant="link" size="sm" className="mt-2 h-auto p-0">
-                                            <a href={exp.company_url} target="_blank" rel="noopener noreferrer">
-                                                Visitar empresa <ExternalLink className="size-3" />
-                                            </a>
-                                        </Button>
-                                    )}
                                 </div>
                             </div>
                         ))}
@@ -142,28 +159,45 @@ export default function About({ experiences, education, certifications, skills, 
                                 <div key={edu.id} className="group overflow-hidden rounded-2xl border border-border/50 bg-card/50 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-border hover:shadow-xl">
                                     <div className="h-1.5 bg-gradient-to-r from-violet-500 to-purple-500" />
                                     <div className="p-6">
-                                        <h3 className="text-base font-bold">{edu.degree}</h3>
-                                        <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted-foreground">
-                                            <span className="font-semibold text-foreground/80">{edu.institution}</span>
-                                            {edu.location && (
-                                                <span className="flex items-center gap-1">
-                                                    <MapPin className="size-3" />
-                                                    {edu.location}
-                                                </span>
+                                        <div className="flex gap-4">
+                                            {/* Institution Logo */}
+                                            {edu.institution_logo_url ? (
+                                                <img
+                                                    src={edu.institution_logo_url}
+                                                    alt={edu.institution}
+                                                    className="size-14 shrink-0 rounded-lg border border-border/50 object-cover"
+                                                />
+                                            ) : (
+                                                <div className="grid size-14 shrink-0 place-items-center rounded-lg border border-border/50 bg-muted">
+                                                    <GraduationCap className="size-6 text-muted-foreground" />
+                                                </div>
                                             )}
+
+                                            <div className="flex-1">
+                                                <h3 className="text-base font-bold">{edu.degree}</h3>
+                                                <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted-foreground">
+                                                    <span className="font-semibold text-foreground/80">{edu.institution}</span>
+                                                    {edu.location && (
+                                                        <span className="flex items-center gap-1">
+                                                            <MapPin className="size-3" />
+                                                            {edu.location}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                                <div className="mt-3 flex items-center gap-1 text-xs text-muted-foreground">
+                                                    <Calendar className="size-3" />
+                                                    {formatDate(edu.start_date)} - {edu.is_current ? 'Presente' : edu.end_date ? formatDate(edu.end_date) : ''}
+                                                </div>
+                                                {edu.field_of_study && (
+                                                    <span className="mt-3 inline-block rounded-full bg-violet-500/10 px-3 py-1 text-xs font-medium text-violet-700 dark:text-violet-400">
+                                                        {edu.field_of_study}
+                                                    </span>
+                                                )}
+                                                {edu.description && (
+                                                    <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{edu.description}</p>
+                                                )}
+                                            </div>
                                         </div>
-                                        <div className="mt-3 flex items-center gap-1 text-xs text-muted-foreground">
-                                            <Calendar className="size-3" />
-                                            {formatDate(edu.start_date)} - {edu.is_current ? 'Presente' : edu.end_date ? formatDate(edu.end_date) : ''}
-                                        </div>
-                                        {edu.field_of_study && (
-                                            <span className="mt-3 inline-block rounded-full bg-violet-500/10 px-3 py-1 text-xs font-medium text-violet-700 dark:text-violet-400">
-                                                {edu.field_of_study}
-                                            </span>
-                                        )}
-                                        {edu.description && (
-                                            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{edu.description}</p>
-                                        )}
                                     </div>
                                 </div>
                             ))}

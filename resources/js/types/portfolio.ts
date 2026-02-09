@@ -119,6 +119,7 @@ export type Education = {
     degree: string;
     institution: string;
     institution_logo: string | null;
+    institution_logo_url?: string | null;
     location: string | null;
     field_of_study: string | null;
     description: string | null;
@@ -126,6 +127,10 @@ export type Education = {
     end_date: string | null;
     is_current: boolean;
     order: number;
+    period?: string;
+    full_degree?: string;
+    created_at: string;
+    updated_at: string;
 };
 
 export type Certification = {

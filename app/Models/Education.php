@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class Education extends Model
 {
@@ -24,6 +26,8 @@ class Education extends Model
         'order',
     ];
 
+    protected $appends = ['institution_logo_url'];
+
     protected function casts(): array
     {
         return [
@@ -32,6 +36,13 @@ class Education extends Model
             'is_current' => 'boolean',
             'order' => 'integer',
         ];
+    }
+
+    protected function institutionLogoUrl(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->institution_logo ? Storage::url($this->institution_logo) : null
+        );
     }
 
     public function scopeCurrent($query)
@@ -62,7 +73,7 @@ class Education extends Model
     {
         $parts = array_filter([
             $this->degree,
-            $this->field_of_study ? "en {$this->field_of_study}" : null,
+            $this->field_of_study ? "in {$this->field_of_study}" : null,
         ]);
 
         return implode(' ', $parts);
