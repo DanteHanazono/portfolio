@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CertificationController;
 use App\Http\Controllers\ContactMessageController;
 use App\Http\Controllers\EducationController;
 use App\Http\Controllers\ExperienceController;
@@ -45,6 +46,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('skills', SkillController::class);
     Route::post('skills/{skill}/toggle-highlighted', [SkillController::class, 'toggleHighlighted'])->name('skills.toggle-highlighted');
     Route::post('skills/reorder', [SkillController::class, 'reorder'])->name('skills.reorder');
+
+    Route::resource('certifications', CertificationController::class);
+    Route::post('certifications/reorder', [CertificationController::class, 'reorder'])->name('certifications.reorder');
 });
 
-require __DIR__ . '/settings.php';
+require __DIR__.'/settings.php';

@@ -146,6 +146,8 @@ export type Certification = {
     expiry_date: string | null;
     does_not_expire: boolean;
     order: number;
+    created_at: string;
+    updated_at: string;
 };
 
 export type HomeStats = {

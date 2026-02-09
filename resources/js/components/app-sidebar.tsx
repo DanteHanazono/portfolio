@@ -1,5 +1,5 @@
 import { Link } from '@inertiajs/react';
-import { BookOpen, Briefcase, Code2, Cpu, Folder, GraduationCap, Globe, LayoutGrid, Zap } from 'lucide-react';
+import { Award, BookOpen, Briefcase, Code2, Cpu, Folder, GraduationCap, Globe, LayoutGrid, Zap } from 'lucide-react';
 import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
@@ -12,6 +12,7 @@ import {
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
+import * as certificationsRoutes from '@/routes/certifications';
 import * as educationRoutes from '@/routes/education';
 import * as experiencesRoutes from '@/routes/experiences';
 import * as projectsRoutes from '@/routes/projects';
@@ -50,6 +51,11 @@ const mainNavItems: NavItem[] = [
         title: 'Habilidades',
         href: skillsRoutes.index.url(),
         icon: Zap,
+    },
+    {
+        title: 'Certificaciones',
+        href: certificationsRoutes.index.url(),
+        icon: Award,
     },
 ];
 
