@@ -54,7 +54,7 @@ type DashboardIndexProps = {
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Dashboard',
-        href: dashboard(),
+        href: dashboard.url(),
     },
 ];
 

@@ -70,11 +70,11 @@ const breadcrumbs = (messageId: number): BreadcrumbItem[] => [
 ];
 
 export default function Show({ message }: ContactMessageShowProps) {
-    const notesForm = useForm({
+    const notesForm = useForm<{ admin_notes: string }>({
         admin_notes: message.admin_notes || '',
     });
 
-    const replyForm = useForm({
+    const replyForm = useForm<{ reply_message: string }>({
         reply_message: '',
     });
 

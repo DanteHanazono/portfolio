@@ -6,6 +6,7 @@ use App\Models\Project;
 use App\Models\Technology;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
@@ -156,7 +157,7 @@ class ProjectController extends Controller
             $validated['gallery'] = $gallery;
         }
 
-        $validated['user_id'] = auth()->id();
+        $validated['user_id'] = Auth::id();
 
         if ($validated['is_published'] ?? false) {
             $validated['published_at'] = now();

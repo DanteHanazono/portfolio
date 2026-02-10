@@ -160,6 +160,22 @@ export type HomeStats = {
     technologies_used: number;
 };
 
+export type ContactMessage = {
+    id: number;
+    name: string;
+    email: string;
+    phone: string | null;
+    company: string | null;
+    subject: string;
+    message: string;
+    status: 'new' | 'read' | 'replied' | 'archived';
+    admin_notes: string | null;
+    read_at: string | null;
+    replied_at: string | null;
+    created_at: string;
+    updated_at: string;
+};
+
 export type PaginatedData<T> = {
     data: T[];
     current_page: number;

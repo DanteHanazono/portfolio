@@ -59,42 +59,4 @@ class DashboardController extends Controller
             'monthlyActivity' => $monthlyActivity,
         ]);
     }
-
-    public function analytics(): Response
-    {
-        $projectStats = [
-            'by_status' => Project::selectRaw('status, COUNT(*) as count')
-                ->groupBy('status')
-                ->pluck('count', 'status'),
-
-            'top_viewed' => Project::orderBy('views_count', 'desc')
-                ->take(10)
-                ->get(['id', 'title', 'views_count', 'created_at']),
-
-            'top_liked' => Project::orderBy('likes_count', 'desc')
-                ->take(10)
-                ->get(['id', 'title', 'likes_count', 'created_at']),
-        ];
-
-        $messageStats = [
-            'by_status' => ContactMessage::selectRaw('status, COUNT(*) as count')
-                ->groupBy('status')
-                ->pluck('count', 'status'),
-
-            'by_month' => ContactMessage::selectRaw('DATE_FORMAT(created_at, "%Y-%m") as month, COUNT(*) as count')
-                ->groupBy('month')
-                ->orderBy('month', 'desc')
-                ->take(12)
-                ->get(),
-
-            'response_time' => ContactMessage::replied()
-                ->selectRaw('AVG(TIMESTAMPDIFF(HOUR, created_at, replied_at)) as avg_hours')
-                ->value('avg_hours'),
-        ];
-
-        return Inertia::render('Dashboard/Analytics', [
-            'projectStats' => $projectStats,
-            'messageStats' => $messageStats,
-        ]);
-    }
 }
