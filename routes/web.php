@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CertificationController;
 use App\Http\Controllers\ContactMessageController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EducationController;
 use App\Http\Controllers\ExperienceController;
 use App\Http\Controllers\HomeController;
@@ -10,7 +11,6 @@ use App\Http\Controllers\SkillController;
 use App\Http\Controllers\TechnologyController;
 use App\Http\Controllers\TestimonialController;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/about', [HomeController::class, 'about'])->name('about');
@@ -25,9 +25,7 @@ Route::get('/project/{slug}', [ProjectController::class, 'publicShow'])->name('p
 Route::post('/project/{slug}/like', [ProjectController::class, 'like'])->name('project.like');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('dashboard', function () {
-        return Inertia::render('dashboard');
-    })->name('dashboard');
+    Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::resource('projects', ProjectController::class);
     Route::post('projects/{project}/toggle-featured', [ProjectController::class, 'toggleFeatured'])->name('projects.toggle-featured');

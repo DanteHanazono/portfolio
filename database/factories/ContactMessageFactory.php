@@ -23,6 +23,7 @@ class ContactMessageFactory extends Factory
             'company' => fake()->company(),
             'subject' => fake()->sentence(),
             'message' => fake()->paragraphs(2, true),
+            'status' => 'new',
         ];
     }
 }
