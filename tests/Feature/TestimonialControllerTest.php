@@ -378,6 +378,31 @@ class TestimonialControllerTest extends TestCase
         Storage::disk('public')->assertMissing('testimonials/avatars/avatar.jpg');
     }
 
+    public function test_existing_avatar_is_preserved_when_updating_other_fields(): void
+    {
+        Storage::fake('public');
+
+        $testimonial = Testimonial::factory()->create([
+            'client_name' => 'Original Name',
+            'content' => 'Original content',
+            'rating' => 4,
+            'client_avatar' => 'testimonials/avatars/avatar.jpg',
+        ]);
+
+        Storage::disk('public')->put('testimonials/avatars/avatar.jpg', 'avatar content');
+
+        $response = $this->actingAs($this->user)->put(route('testimonials.update', $testimonial), [
+            'client_name' => 'Updated Name',
+            'content' => 'Updated content',
+            'rating' => 5,
+        ]);
+
+        $response->assertRedirect(route('testimonials.index'));
+        $testimonial->refresh();
+        $this->assertEquals('testimonials/avatars/avatar.jpg', $testimonial->client_avatar);
+        Storage::disk('public')->assertExists('testimonials/avatars/avatar.jpg');
+    }
+
     public function test_guests_cannot_delete_testimonial(): void
     {
         $testimonial = Testimonial::factory()->create();

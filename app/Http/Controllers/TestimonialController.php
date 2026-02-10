@@ -118,6 +118,8 @@ class TestimonialController extends Controller
             }
             $validated['client_avatar'] = $request->file('client_avatar')
                 ->store('testimonials/avatars', 'public');
+        } else {
+            unset($validated['client_avatar']);
         }
 
         $testimonial->update($validated);
