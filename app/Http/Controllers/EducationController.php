@@ -97,7 +97,6 @@ class EducationController extends Controller
             $validated['institution_logo'] = $request->file('institution_logo')
                 ->store('education/logos', 'public');
         } else {
-            // No se subió nueva imagen ni se marcó para eliminar, mantener la existente
             unset($validated['institution_logo']);
         }
 

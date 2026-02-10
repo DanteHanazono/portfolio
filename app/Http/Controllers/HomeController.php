@@ -15,9 +15,6 @@ use Inertia\Response;
 
 class HomeController extends Controller
 {
-    /**
-     * Display the home page.
-     */
     public function index(): Response
     {
         return Inertia::render('Home', [
@@ -48,9 +45,6 @@ class HomeController extends Controller
         ]);
     }
 
-    /**
-     * Display the about page.
-     */
     public function about(): Response
     {
         return Inertia::render('About', [
@@ -62,9 +56,6 @@ class HomeController extends Controller
         ]);
     }
 
-    /**
-     * Display the portfolio page.
-     */
     public function portfolio(Request $request): Response
     {
         $query = Project::query()
@@ -88,9 +79,6 @@ class HomeController extends Controller
         ]);
     }
 
-    /**
-     * Display the skills page.
-     */
     public function skills(): Response
     {
         $skills = Skill::ordered()->get();
@@ -103,9 +91,6 @@ class HomeController extends Controller
         ]);
     }
 
-    /**
-     * Display testimonials page.
-     */
     public function testimonials(): Response
     {
         return Inertia::render('Testimonials', [
@@ -116,9 +101,6 @@ class HomeController extends Controller
         ]);
     }
 
-    /**
-     * Calculate total years of experience.
-     */
     private function calculateYearsExperience(): int
     {
         $experiences = Experience::all();

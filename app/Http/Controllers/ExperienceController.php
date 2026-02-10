@@ -105,7 +105,6 @@ class ExperienceController extends Controller
             $validated['company_logo'] = $request->file('company_logo')
                 ->store('experiences/logos', 'public');
         } else {
-            // No se subió nueva imagen ni se marcó para eliminar, mantener la existente
             unset($validated['company_logo']);
         }
 

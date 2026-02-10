@@ -112,9 +112,7 @@ export default function Show({ message }: ContactMessageShowProps) {
         e.preventDefault();
         notesForm.post(contactMessagesRoutes.updateNotes.url({ contactMessage: message.id }), {
             preserveScroll: true,
-            onSuccess: () => {
-                // Mensaje de éxito viene del backend
-            },
+            onSuccess: () => { },
         });
     }
 

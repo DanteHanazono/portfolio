@@ -71,18 +71,6 @@ const mainNavItems: NavItem[] = [
     },
 ];
 
-// const footerNavItems: NavItem[] = [
-//     {
-//         title: 'Ver Portafolio',
-//         href: '/',
-//         icon: Globe,
-//     },
-//     {
-//         title: 'Documentación',
-//         href: 'https://laravel.com/docs',
-//         icon: BookOpen,
-//     },
-// ];
 
 export function AppSidebar() {
     return (

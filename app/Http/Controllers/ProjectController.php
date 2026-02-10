@@ -221,7 +221,6 @@ class ProjectController extends Controller
             $validated['featured_image'] = $request->file('featured_image')
                 ->store('projects/featured', 'public');
         } else {
-            // No se subió nueva imagen ni se marcó para eliminar, mantener la existente
             unset($validated['featured_image']);
         }
 
@@ -235,7 +234,6 @@ class ProjectController extends Controller
             $validated['thumbnail'] = $request->file('thumbnail')
                 ->store('projects/thumbnails', 'public');
         } else {
-            // No se subió nueva imagen ni se marcó para eliminar, mantener la existente
             unset($validated['thumbnail']);
         }
 

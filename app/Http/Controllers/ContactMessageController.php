@@ -23,14 +23,10 @@ class ContactMessageController extends Controller
         return back()->with('success', '¡Mensaje enviado exitosamente! Te responderé pronto.');
     }
 
-    /**
-     * Display a listing of contact messages (Admin).
-     */
     public function index(Request $request): Response
     {
         $query = ContactMessage::query();
 
-        // Filtros
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
@@ -46,7 +42,6 @@ class ContactMessageController extends Controller
 
         $messages = $query->latest()->paginate(20)->withQueryString();
 
-        // Contadores de estado
         $statusCounts = [
             'new' => ContactMessage::new()->count(),
             'read' => ContactMessage::read()->count(),
@@ -61,12 +56,8 @@ class ContactMessageController extends Controller
         ]);
     }
 
-    /**
-     * Display the specified contact message (Admin).
-     */
     public function show(ContactMessage $contactMessage): Response
     {
-        // Marcar como leído automáticamente
         if ($contactMessage->isNew()) {
             $contactMessage->markAsRead();
         }
@@ -76,9 +67,6 @@ class ContactMessageController extends Controller
         ]);
     }
 
-    /**
-     * Mark message as read.
-     */
     public function markAsRead(ContactMessage $contactMessage): RedirectResponse
     {
         $contactMessage->markAsRead();
@@ -86,9 +74,6 @@ class ContactMessageController extends Controller
         return back()->with('success', 'Mensaje marcado como leído');
     }
 
-    /**
-     * Mark message as replied.
-     */
     public function markAsReplied(ContactMessage $contactMessage): RedirectResponse
     {
         $contactMessage->markAsReplied();
@@ -96,9 +81,6 @@ class ContactMessageController extends Controller
         return back()->with('success', 'Mensaje marcado como respondido');
     }
 
-    /**
-     * Archive the message.
-     */
     public function archive(ContactMessage $contactMessage): RedirectResponse
     {
         $contactMessage->archive();
@@ -106,9 +88,6 @@ class ContactMessageController extends Controller
         return back()->with('success', 'Mensaje archivado');
     }
 
-    /**
-     * Update admin notes.
-     */
     public function updateNotes(Request $request, ContactMessage $contactMessage): RedirectResponse
     {
         $validated = $request->validate([
@@ -120,28 +99,17 @@ class ContactMessageController extends Controller
         return back()->with('success', 'Notas actualizadas');
     }
 
-    /**
-     * Send reply to contact message.
-     */
     public function reply(Request $request, ContactMessage $contactMessage): RedirectResponse
     {
         $validated = $request->validate([
             'reply_message' => 'required|string|max:5000',
         ]);
 
-        // Enviar email de respuesta
-        // Mail::to($contactMessage->email)->send(
-        //     new ContactReply($contactMessage, $validated['reply_message'])
-        // );
-
         $contactMessage->markAsReplied();
 
         return back()->with('success', 'Respuesta enviada exitosamente');
     }
 
-    /**
-     * Delete the specified contact message.
-     */
     public function destroy(ContactMessage $contactMessage): RedirectResponse
     {
         $contactMessage->delete();
@@ -150,9 +118,6 @@ class ContactMessageController extends Controller
             ->with('success', 'Mensaje eliminado exitosamente');
     }
 
-    /**
-     * Bulk actions on messages.
-     */
     public function bulkAction(Request $request): RedirectResponse
     {
         $validated = $request->validate([

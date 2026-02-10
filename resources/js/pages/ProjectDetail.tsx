@@ -37,9 +37,7 @@ export default function ProjectDetail({ project, relatedProjects }: ProjectDetai
     function handleLike() {
         router.post(`/project/${project.slug}/like`, {}, {
             preserveScroll: true,
-            onSuccess: () => {
-                // Visual feedback
-            },
+            onSuccess: () => { },
         });
     }
 
