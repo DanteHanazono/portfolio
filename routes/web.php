@@ -55,6 +55,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('testimonials/{testimonial}/toggle-featured', [TestimonialController::class, 'toggleFeatured'])->name('testimonials.toggle-featured');
     Route::post('testimonials/{testimonial}/toggle-published', [TestimonialController::class, 'togglePublished'])->name('testimonials.toggle-published');
     Route::post('testimonials/reorder', [TestimonialController::class, 'reorder'])->name('testimonials.reorder');
+
+    Route::get('admin/contact-messages', [ContactMessageController::class, 'index'])->name('admin.contact-messages.index');
+    Route::get('admin/contact-messages/{contactMessage}', [ContactMessageController::class, 'show'])->name('admin.contact-messages.show');
+    Route::post('admin/contact-messages/{contactMessage}/mark-as-read', [ContactMessageController::class, 'markAsRead'])->name('admin.contact-messages.mark-as-read');
+    Route::post('admin/contact-messages/{contactMessage}/mark-as-replied', [ContactMessageController::class, 'markAsReplied'])->name('admin.contact-messages.mark-as-replied');
+    Route::post('admin/contact-messages/{contactMessage}/archive', [ContactMessageController::class, 'archive'])->name('admin.contact-messages.archive');
+    Route::post('admin/contact-messages/{contactMessage}/update-notes', [ContactMessageController::class, 'updateNotes'])->name('admin.contact-messages.update-notes');
+    Route::post('admin/contact-messages/{contactMessage}/reply', [ContactMessageController::class, 'reply'])->name('admin.contact-messages.reply');
+    Route::delete('admin/contact-messages/{contactMessage}', [ContactMessageController::class, 'destroy'])->name('admin.contact-messages.destroy');
+    Route::post('admin/contact-messages/bulk-action', [ContactMessageController::class, 'bulkAction'])->name('admin.contact-messages.bulk-action');
 });
 
 require __DIR__.'/settings.php';

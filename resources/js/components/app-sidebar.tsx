@@ -1,5 +1,5 @@
 import { Link } from '@inertiajs/react';
-import { Award, BookOpen, Briefcase, Code2, Cpu, Folder, GraduationCap, Globe, LayoutGrid, MessageSquare, Zap } from 'lucide-react';
+import { Award, BookOpen, Briefcase, Code2, Cpu, Folder, GraduationCap, Globe, Inbox, LayoutGrid, MessageSquare, Zap } from 'lucide-react';
 import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
 import * as certificationsRoutes from '@/routes/certifications';
+import * as contactMessagesRoutes from '@/routes/admin/contact-messages';
 import * as educationRoutes from '@/routes/education';
 import * as experiencesRoutes from '@/routes/experiences';
 import * as projectsRoutes from '@/routes/projects';
@@ -62,6 +63,11 @@ const mainNavItems: NavItem[] = [
         title: 'Testimonios',
         href: testimonialsRoutes.index.url(),
         icon: MessageSquare,
+    },
+    {
+        title: 'Mensajes',
+        href: contactMessagesRoutes.index.url(),
+        icon: Inbox,
     },
 ];
 

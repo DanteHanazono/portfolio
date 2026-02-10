@@ -63,6 +63,14 @@ class ContactMessage extends Model
         ]);
     }
 
+    public function markAsReplied(): void
+    {
+        $this->update([
+            'status' => 'replied',
+            'replied_at' => now(),
+        ]);
+    }
+
     public function archive(): void
     {
         $this->update([
