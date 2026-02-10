@@ -205,7 +205,7 @@ export default function Index({ testimonials, projects, filters }: TestimonialsI
                                     {/* Avatar */}
                                     {testimonial.client_avatar ? (
                                         <img
-                                            src={testimonial.client_avatar}
+                                            src={`/storage/${testimonial.client_avatar}`}
                                             alt={testimonial.client_name}
                                             className="size-16 rounded-full object-cover ring-2 ring-border/50"
                                         />

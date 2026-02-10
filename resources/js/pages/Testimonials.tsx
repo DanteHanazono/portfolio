@@ -53,8 +53,8 @@ export default function Testimonials({ testimonials }: TestimonialsProps) {
                                             <Star
                                                 key={i}
                                                 className={`size-5 ${i < testimonial.rating!
-                                                        ? 'fill-amber-400 text-amber-400'
-                                                        : 'text-muted/30'
+                                                    ? 'fill-amber-400 text-amber-400'
+                                                    : 'text-muted/30'
                                                     }`}
                                             />
                                         ))}
@@ -68,7 +68,7 @@ export default function Testimonials({ testimonials }: TestimonialsProps) {
                                 <div className="mt-6 flex items-center gap-3 border-t border-border/50 pt-5">
                                     {testimonial.client_avatar ? (
                                         <img
-                                            src={testimonial.client_avatar}
+                                            src={`/storage/${testimonial.client_avatar}`}
                                             alt={testimonial.client_name}
                                             className="size-11 rounded-full object-cover ring-2 ring-border"
                                         />

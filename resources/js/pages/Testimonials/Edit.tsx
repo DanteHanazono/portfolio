@@ -61,7 +61,7 @@ export default function Edit({ testimonial, projects }: TestimonialsEditProps) {
         }
     }
 
-    const currentAvatar = preview || (!data.remove_avatar && testimonial.client_avatar ? testimonial.client_avatar : null);
+    const currentAvatar = preview || (!data.remove_avatar && testimonial.client_avatar ? `/storage/${testimonial.client_avatar}` : null);
 
     return (
         <AppLayout>

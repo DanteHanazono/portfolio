@@ -87,7 +87,7 @@ export default function Show({ testimonial }: TestimonialsShowProps) {
                         {/* Avatar */}
                         {testimonial.client_avatar ? (
                             <img
-                                src={testimonial.client_avatar}
+                                src={`/storage/${testimonial.client_avatar}`}
                                 alt={testimonial.client_name}
                                 className="size-32 rounded-full object-cover ring-4 ring-border/50"
                             />

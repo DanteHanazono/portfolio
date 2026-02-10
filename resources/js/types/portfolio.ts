@@ -86,6 +86,7 @@ export type Testimonial = {
     client_position: string | null;
     client_company: string | null;
     client_avatar: string | null;
+    client_avatar_url?: string | null;
     content: string;
     rating: number | null;
     is_featured: boolean;
