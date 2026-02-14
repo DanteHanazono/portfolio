@@ -9,6 +9,7 @@ use App\Models\Project;
 use App\Models\Skill;
 use App\Models\Technology;
 use App\Models\Testimonial;
+use App\Services\SeoService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -17,7 +18,10 @@ class HomeController extends Controller
 {
     public function index(): Response
     {
+        $seo = SeoService::forHome();
+
         return Inertia::render('Home', [
+            'seo' => $seo->toArray(),
             'featuredProjects' => Project::published()
                 ->featured()
                 ->with(['technologies'])
@@ -47,7 +51,14 @@ class HomeController extends Controller
 
     public function about(): Response
     {
+        $seo = (new SeoService)
+            ->setTitle('Acerca de')
+            ->setDescription('Conoce mi experiencia, educación y habilidades en desarrollo web full-stack.')
+            ->setCanonical(route('about'))
+            ->setKeywords(['experiencia', 'educación', 'habilidades', 'certificaciones']);
+
         return Inertia::render('About', [
+            'seo' => $seo->toArray(),
             'experiences' => Experience::ordered()->get(),
             'education' => Education::ordered()->get(),
             'certifications' => Certification::active()->ordered()->get(),
@@ -72,7 +83,10 @@ class HomeController extends Controller
 
         $projects = $query->ordered()->paginate(12)->withQueryString();
 
+        $seo = SeoService::forPortfolio();
+
         return Inertia::render('Portfolio', [
+            'seo' => $seo->toArray(),
             'projects' => $projects,
             'technologies' => Technology::ordered()->get(),
             'filters' => $request->only(['category', 'technology']),
@@ -84,7 +98,14 @@ class HomeController extends Controller
         $skills = Skill::ordered()->get();
         $groupedSkills = $skills->groupBy('category');
 
+        $seo = (new SeoService)
+            ->setTitle('Habilidades')
+            ->setDescription('Explora mis habilidades técnicas en desarrollo web, frameworks y herramientas.')
+            ->setCanonical(route('habilidades'))
+            ->setKeywords(['habilidades', 'skills', 'tecnologías', 'desarrollo web']);
+
         return Inertia::render('Skills', [
+            'seo' => $seo->toArray(),
             'skills' => $skills,
             'groupedSkills' => $groupedSkills,
             'technologies' => Technology::ordered()->get(),
@@ -93,7 +114,14 @@ class HomeController extends Controller
 
     public function testimonials(): Response
     {
+        $seo = (new SeoService)
+            ->setTitle('Testimonios')
+            ->setDescription('Lee opiniones y testimonios de clientes satisfechos con mis servicios de desarrollo web.')
+            ->setCanonical(route('testimonials'))
+            ->setKeywords(['testimonios', 'opiniones', 'reseñas', 'clientes']);
+
         return Inertia::render('Testimonials', [
+            'seo' => $seo->toArray(),
             'testimonials' => Testimonial::published()
                 ->with('project')
                 ->ordered()

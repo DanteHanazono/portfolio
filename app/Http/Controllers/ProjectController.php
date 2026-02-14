@@ -9,6 +9,7 @@ use App\Http\Requests\UpdateProjectRequest;
 use App\Models\Project;
 use App\Models\Technology;
 use App\Services\FileUploadService;
+use App\Services\SeoService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -69,8 +70,8 @@ class ProjectController extends Controller
     {
         $project = Project::with([
             'technologies',
-            'features' => fn ($q) => $q->ordered(),
-            'publishedTestimonials' => fn ($q) => $q->ordered(),
+            'features' => fn($q) => $q->ordered(),
+            'publishedTestimonials' => fn($q) => $q->ordered(),
             'user',
         ])->where('slug', $slug)->firstOrFail();
 
@@ -92,8 +93,8 @@ class ProjectController extends Controller
         $project = Project::published()
             ->with([
                 'technologies',
-                'features' => fn ($q) => $q->ordered(),
-                'publishedTestimonials' => fn ($q) => $q->ordered(),
+                'features' => fn($q) => $q->ordered(),
+                'publishedTestimonials' => fn($q) => $q->ordered(),
                 'user',
             ])
             ->where('slug', $slug)
@@ -108,7 +109,10 @@ class ProjectController extends Controller
             ->take(3)
             ->get();
 
+        $seo = SeoService::forProject($project);
+
         return Inertia::render('ProjectDetail', [
+            'seo' => $seo->toArray(),
             'project' => $project,
             'relatedProjects' => $relatedProjects,
         ]);

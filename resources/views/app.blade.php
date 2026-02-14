@@ -4,6 +4,51 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
+        {{-- SEO Meta Tags --}}
+        @php
+            $seo = $page['props']['seo'] ?? [];
+            $meta = $seo['meta'] ?? [];
+            $og = $seo['openGraph'] ?? [];
+            $twitter = $seo['twitter'] ?? [];
+        @endphp
+
+        <title inertia>{{ $meta['title'] ?? config('app.name') }}</title>
+
+        @if(isset($meta['description']))
+            <meta name="description" content="{{ $meta['description'] }}">
+        @endif
+
+        @if(isset($meta['keywords']))
+            <meta name="keywords" content="{{ $meta['keywords'] }}">
+        @endif
+
+        @if(isset($meta['author']))
+            <meta name="author" content="{{ $meta['author'] }}">
+        @endif
+
+        <meta name="robots" content="{{ $meta['robots'] ?? 'index, follow' }}">
+
+        @if(isset($meta['canonical']))
+            <link rel="canonical" href="{{ $meta['canonical'] }}">
+        @endif
+
+        {{-- Open Graph Meta Tags --}}
+        @foreach($og as $property => $content)
+            <meta property="og:{{ $property }}" content="{{ $content }}">
+        @endforeach
+
+        {{-- Twitter Card Meta Tags --}}
+        @foreach($twitter as $name => $content)
+            <meta name="twitter:{{ $name }}" content="{{ $content }}">
+        @endforeach
+
+        {{-- Structured Data --}}
+        @if(isset($seo['structuredData']) && $seo['structuredData'])
+            <script type="application/ld+json">
+                {!! json_encode($seo['structuredData'], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}
+            </script>
+        @endif
+
         {{-- Inline script to detect system dark mode preference and apply it immediately --}}
         <script>
             (function() {
@@ -29,8 +74,6 @@
                 background-color: oklch(0.145 0 0);
             }
         </style>
-
-        <title inertia>{{ config('app.name', 'Laravel') }}</title>
 
         <link rel="icon" href="/favicon.ico" sizes="any">
         <link rel="icon" href="/favicon.svg" type="image/svg+xml">

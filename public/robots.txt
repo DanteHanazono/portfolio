@@ -1,2 +1,24 @@
 User-agent: *
-Disallow:
+Allow: /
+
+# Disallow admin areas
+Disallow: /admin/
+Disallow: /dashboard
+Disallow: /login
+Disallow: /register
+Disallow: /password/
+
+# Allow public pages
+Allow: /
+Allow: /about
+Allow: /portfolio
+Allow: /habilidades
+Allow: /testimonials
+Allow: /contact
+Allow: /project/
+
+# Sitemap (update with your domain)
+# Sitemap: https://yourdomain.com/sitemap.xml
+
+# Crawl delay (optional)
+Crawl-delay: 1
