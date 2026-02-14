@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\HasReordering;
+use App\Http\Controllers\Concerns\HasToggleable;
+use App\Http\Requests\StoreTechnologyRequest;
+use App\Http\Requests\UpdateTechnologyRequest;
 use App\Models\Technology;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -11,6 +15,8 @@ use Inertia\Response;
 
 class TechnologyController extends Controller
 {
+    use HasReordering, HasToggleable;
+
     public function index(Request $request): Response
     {
         $query = Technology::query()->withCount('projects');
@@ -39,23 +45,11 @@ class TechnologyController extends Controller
         return Inertia::render('Technologies/Create');
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(StoreTechnologyRequest $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'slug' => 'nullable|string|unique:technologies,slug',
-            'type' => 'nullable|string|max:255',
-            'icon' => 'nullable|string|max:255',
-            'color' => 'nullable|string|max:7',
-            'description' => 'nullable|string',
-            'proficiency' => 'nullable|integer|min:0|max:100',
-            'order' => 'nullable|integer',
-            'is_featured' => 'boolean',
-        ]);
+        $validated = $request->validated();
 
-        if (empty($validated['slug'])) {
-            $validated['slug'] = Str::slug($validated['name']);
-        }
+        $validated['slug'] = $validated['slug'] ?? Str::slug($validated['name']);
 
         Technology::create($validated);
 
@@ -83,23 +77,11 @@ class TechnologyController extends Controller
         ]);
     }
 
-    public function update(Request $request, Technology $technology): RedirectResponse
+    public function update(UpdateTechnologyRequest $request, Technology $technology): RedirectResponse
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'slug' => 'nullable|string|unique:technologies,slug,'.$technology->id,
-            'type' => 'nullable|string|max:255',
-            'icon' => 'nullable|string|max:255',
-            'color' => 'nullable|string|max:7',
-            'description' => 'nullable|string',
-            'proficiency' => 'nullable|integer|min:0|max:100',
-            'order' => 'nullable|integer',
-            'is_featured' => 'boolean',
-        ]);
+        $validated = $request->validated();
 
-        if (empty($validated['slug'])) {
-            $validated['slug'] = Str::slug($validated['name']);
-        }
+        $validated['slug'] = $validated['slug'] ?? Str::slug($validated['name']);
 
         $technology->update($validated);
 
@@ -121,25 +103,11 @@ class TechnologyController extends Controller
 
     public function toggleFeatured(Technology $technology): RedirectResponse
     {
-        $technology->update([
-            'is_featured' => ! $technology->is_featured,
-        ]);
-
-        return back()->with('success', 'Estado destacado actualizado');
+        return $this->toggleAttribute($technology, 'is_featured', 'Estado destacado actualizado');
     }
 
     public function reorder(Request $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'technologies' => 'required|array',
-            'technologies.*.id' => 'required|exists:technologies,id',
-            'technologies.*.order' => 'required|integer',
-        ]);
-
-        foreach ($validated['technologies'] as $item) {
-            Technology::where('id', $item['id'])->update(['order' => $item['order']]);
-        }
-
-        return back()->with('success', 'Orden actualizado exitosamente');
+        return $this->reorderItems($request, 'technologies', Technology::class);
     }
 }

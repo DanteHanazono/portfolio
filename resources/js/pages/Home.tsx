@@ -401,7 +401,7 @@ export default function Home({ featuredProjects, highlightedSkills, featuredTest
                                 <div className="mt-6 flex items-center gap-3 border-t border-border/50 pt-5">
                                     {testimonial.client_avatar ? (
                                         <img
-                                            src={testimonial.client_avatar}
+                                            src={`/storage/${testimonial.client_avatar}`}
                                             alt={testimonial.client_name}
                                             className="size-11 rounded-full object-cover ring-2 ring-border"
                                         />

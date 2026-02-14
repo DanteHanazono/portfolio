@@ -2,15 +2,24 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\HasReordering;
+use App\Http\Requests\StoreEducationRequest;
+use App\Http\Requests\UpdateEducationRequest;
 use App\Models\Education;
+use App\Services\FileUploadService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class EducationController extends Controller
 {
+    use HasReordering;
+
+    public function __construct(
+        private FileUploadService $fileService
+    ) {}
+
     public function index(): Response
     {
         $education = Education::ordered()->get();
@@ -32,25 +41,15 @@ class EducationController extends Controller
         ]);
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(StoreEducationRequest $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'degree' => 'required|string|max:255',
-            'institution' => 'required|string|max:255',
-            'institution_logo' => 'nullable|image|max:2048',
-            'location' => 'nullable|string|max:255',
-            'field_of_study' => 'nullable|string|max:255',
-            'description' => 'nullable|string',
-            'gpa' => 'nullable|numeric|min:0|max:5',
-            'start_date' => 'required|date',
-            'end_date' => 'nullable|date|after_or_equal:start_date',
-            'is_current' => 'boolean',
-            'order' => 'nullable|integer',
-        ]);
+        $validated = $request->validated();
 
         if ($request->hasFile('institution_logo')) {
-            $validated['institution_logo'] = $request->file('institution_logo')
-                ->store('education/logos', 'public');
+            $validated['institution_logo'] = $this->fileService->upload(
+                $request->file('institution_logo'),
+                'education/logos'
+            );
         }
 
         if ($validated['is_current'] ?? false) {
@@ -70,32 +69,17 @@ class EducationController extends Controller
         ]);
     }
 
-    public function update(Request $request, Education $education): RedirectResponse
+    public function update(UpdateEducationRequest $request, Education $education): RedirectResponse
     {
-        $validated = $request->validate([
-            'degree' => 'required|string|max:255',
-            'institution' => 'required|string|max:255',
-            'institution_logo' => 'nullable|image|max:2048',
-            'remove_logo' => 'boolean',
-            'location' => 'nullable|string|max:255',
-            'field_of_study' => 'nullable|string|max:255',
-            'description' => 'nullable|string',
-            'gpa' => 'nullable|numeric|min:0|max:5',
-            'start_date' => 'required|date',
-            'end_date' => 'nullable|date|after_or_equal:start_date',
-            'is_current' => 'boolean',
-            'order' => 'nullable|integer',
-        ]);
+        $validated = $request->validated();
 
-        if ($request->boolean('remove_logo') && $education->institution_logo) {
-            Storage::disk('public')->delete($education->institution_logo);
-            $validated['institution_logo'] = null;
-        } elseif ($request->hasFile('institution_logo')) {
-            if ($education->institution_logo) {
-                Storage::disk('public')->delete($education->institution_logo);
-            }
-            $validated['institution_logo'] = $request->file('institution_logo')
-                ->store('education/logos', 'public');
+        if ($request->hasFile('institution_logo') || $request->boolean('remove_logo')) {
+            $validated['institution_logo'] = $this->fileService->handleFileUpdate(
+                $education->institution_logo,
+                $request->file('institution_logo'),
+                $request->boolean('remove_logo'),
+                'education/logos'
+            );
         } else {
             unset($validated['institution_logo']);
         }
@@ -112,9 +96,7 @@ class EducationController extends Controller
 
     public function destroy(Education $education): RedirectResponse
     {
-        if ($education->institution_logo) {
-            Storage::disk('public')->delete($education->institution_logo);
-        }
+        $this->fileService->delete($education->institution_logo);
 
         $education->delete();
 
@@ -124,16 +106,6 @@ class EducationController extends Controller
 
     public function reorder(Request $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'education' => 'required|array',
-            'education.*.id' => 'required|exists:education,id',
-            'education.*.order' => 'required|integer',
-        ]);
-
-        foreach ($validated['education'] as $item) {
-            Education::where('id', $item['id'])->update(['order' => $item['order']]);
-        }
-
-        return back()->with('success', 'Orden actualizado exitosamente');
+        return $this->reorderItems($request, 'education', Education::class);
     }
 }

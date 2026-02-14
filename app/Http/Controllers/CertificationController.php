@@ -2,15 +2,24 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\HasReordering;
+use App\Http\Requests\StoreCertificationRequest;
+use App\Http\Requests\UpdateCertificationRequest;
 use App\Models\Certification;
+use App\Services\FileUploadService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class CertificationController extends Controller
 {
+    use HasReordering;
+
+    public function __construct(
+        private FileUploadService $fileService
+    ) {}
+
     public function index(Request $request): Response
     {
         $query = Certification::query();
@@ -43,23 +52,15 @@ class CertificationController extends Controller
         return Inertia::render('Certifications/Create');
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(StoreCertificationRequest $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'issuing_organization' => 'required|string|max:255',
-            'credential_id' => 'nullable|string|max:255',
-            'credential_url' => 'nullable|url',
-            'badge_image' => 'nullable|image|max:2048',
-            'issue_date' => 'required|date',
-            'expiry_date' => 'nullable|date|after:issue_date',
-            'does_not_expire' => 'boolean',
-            'order' => 'nullable|integer',
-        ]);
+        $validated = $request->validated();
 
         if ($request->hasFile('badge_image')) {
-            $validated['badge_image'] = $request->file('badge_image')
-                ->store('certifications/badges', 'public');
+            $validated['badge_image'] = $this->fileService->upload(
+                $request->file('badge_image'),
+                'certifications/badges'
+            );
         }
 
         if ($validated['does_not_expire'] ?? false) {
@@ -86,30 +87,19 @@ class CertificationController extends Controller
         ]);
     }
 
-    public function update(Request $request, Certification $certification): RedirectResponse
+    public function update(UpdateCertificationRequest $request, Certification $certification): RedirectResponse
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'issuing_organization' => 'required|string|max:255',
-            'credential_id' => 'nullable|string|max:255',
-            'credential_url' => 'nullable|url',
-            'badge_image' => 'nullable|image|max:2048',
-            'remove_badge' => 'boolean',
-            'issue_date' => 'required|date',
-            'expiry_date' => 'nullable|date|after:issue_date',
-            'does_not_expire' => 'boolean',
-            'order' => 'nullable|integer',
-        ]);
+        $validated = $request->validated();
 
-        if ($request->boolean('remove_badge') && $certification->badge_image) {
-            Storage::disk('public')->delete($certification->badge_image);
-            $validated['badge_image'] = null;
-        } elseif ($request->hasFile('badge_image')) {
-            if ($certification->badge_image) {
-                Storage::disk('public')->delete($certification->badge_image);
-            }
-            $validated['badge_image'] = $request->file('badge_image')
-                ->store('certifications/badges', 'public');
+        if ($request->hasFile('badge_image') || $request->boolean('remove_badge')) {
+            $validated['badge_image'] = $this->fileService->handleFileUpdate(
+                $certification->badge_image,
+                $request->file('badge_image'),
+                $request->boolean('remove_badge'),
+                'certifications/badges'
+            );
+        } else {
+            unset($validated['badge_image']);
         }
 
         if ($validated['does_not_expire'] ?? false) {
@@ -124,9 +114,7 @@ class CertificationController extends Controller
 
     public function destroy(Certification $certification): RedirectResponse
     {
-        if ($certification->badge_image) {
-            Storage::disk('public')->delete($certification->badge_image);
-        }
+        $this->fileService->delete($certification->badge_image);
 
         $certification->delete();
 
@@ -136,16 +124,6 @@ class CertificationController extends Controller
 
     public function reorder(Request $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'certifications' => 'required|array',
-            'certifications.*.id' => 'required|exists:certifications,id',
-            'certifications.*.order' => 'required|integer',
-        ]);
-
-        foreach ($validated['certifications'] as $item) {
-            Certification::where('id', $item['id'])->update(['order' => $item['order']]);
-        }
-
-        return back()->with('success', 'Orden actualizado exitosamente');
+        return $this->reorderItems($request, 'certifications', Certification::class);
     }
 }

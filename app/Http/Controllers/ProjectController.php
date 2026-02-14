@@ -2,18 +2,28 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\HasReordering;
+use App\Http\Controllers\Concerns\HasToggleable;
+use App\Http\Requests\StoreProjectRequest;
+use App\Http\Requests\UpdateProjectRequest;
 use App\Models\Project;
 use App\Models\Technology;
+use App\Services\FileUploadService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class ProjectController extends Controller
 {
+    use HasReordering, HasToggleable;
+
+    public function __construct(
+        private FileUploadService $fileService
+    ) {}
+
     public function index(Request $request): Response
     {
         $query = Project::query()
@@ -111,57 +121,18 @@ class ProjectController extends Controller
         ]);
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(StoreProjectRequest $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'slug' => 'nullable|string|unique:projects,slug',
-            'description' => 'required|string',
-            'content' => 'nullable|string',
-            'featured_image' => 'nullable|image|max:5120',
-            'thumbnail' => 'nullable|image|max:2048',
-            'gallery' => 'nullable|array',
-            'gallery.*' => 'image|max:5120',
-            'video_url' => 'nullable|url',
-            'demo_url' => 'nullable|url',
-            'github_url' => 'nullable|url',
-            'client_name' => 'nullable|string|max:255',
-            'start_date' => 'nullable|date',
-            'end_date' => 'nullable|date|after_or_equal:start_date',
-            'status' => 'required|in:draft,in_progress,completed,archived',
-            'technologies' => 'nullable|array',
-            'technologies.*' => 'exists:technologies,id',
-            'is_featured' => 'boolean',
-            'is_published' => 'boolean',
-        ]);
+        $validated = $request->validated();
 
-        if (empty($validated['slug'])) {
-            $validated['slug'] = Str::slug($validated['title']);
-        }
-
-        if ($request->hasFile('featured_image')) {
-            $validated['featured_image'] = $request->file('featured_image')
-                ->store('projects/featured', 'public');
-        }
-
-        if ($request->hasFile('thumbnail')) {
-            $validated['thumbnail'] = $request->file('thumbnail')
-                ->store('projects/thumbnails', 'public');
-        }
-
-        if ($request->hasFile('gallery')) {
-            $gallery = [];
-            foreach ($request->file('gallery') as $image) {
-                $gallery[] = $image->store('projects/gallery', 'public');
-            }
-            $validated['gallery'] = $gallery;
-        }
-
+        $validated['slug'] = $validated['slug'] ?? Str::slug($validated['title']);
         $validated['user_id'] = Auth::id();
 
         if ($validated['is_published'] ?? false) {
             $validated['published_at'] = now();
         }
+
+        $validated = $this->handleProjectFiles($request, $validated);
 
         $project = Project::create($validated);
 
@@ -183,67 +154,13 @@ class ProjectController extends Controller
         ]);
     }
 
-    public function update(Request $request, Project $project): RedirectResponse
+    public function update(UpdateProjectRequest $request, Project $project): RedirectResponse
     {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'slug' => 'nullable|string|unique:projects,slug,'.$project->id,
-            'subtitle' => 'nullable|string|max:500',
-            'description' => 'required|string',
-            'content' => 'nullable|string',
-            'featured_image' => 'nullable|image|max:5120',
-            'thumbnail' => 'nullable|image|max:2048',
-            'remove_featured_image' => 'boolean',
-            'remove_thumbnail' => 'boolean',
-            'gallery' => 'nullable|array',
-            'gallery.*' => 'image|max:5120',
-            'existing_gallery' => 'nullable|array',
-            'video_url' => 'nullable|url',
-            'demo_url' => 'nullable|url',
-            'github_url' => 'nullable|url',
-            'client_name' => 'nullable|string|max:255',
-            'start_date' => 'nullable|date',
-            'end_date' => 'nullable|date|after_or_equal:start_date',
-            'status' => 'required|in:draft,in_progress,completed,archived',
-            'technologies' => 'nullable|array',
-            'technologies.*' => 'exists:technologies,id',
-            'is_featured' => 'boolean',
-            'is_published' => 'boolean',
-        ]);
+        $validated = $request->validated();
 
-        if ($request->boolean('remove_featured_image') && $project->featured_image) {
-            Storage::disk('public')->delete($project->featured_image);
-            $validated['featured_image'] = null;
-        } elseif ($request->hasFile('featured_image')) {
-            if ($project->featured_image) {
-                Storage::disk('public')->delete($project->featured_image);
-            }
-            $validated['featured_image'] = $request->file('featured_image')
-                ->store('projects/featured', 'public');
-        } else {
-            unset($validated['featured_image']);
-        }
+        $validated['slug'] = $validated['slug'] ?? Str::slug($validated['title']);
 
-        if ($request->boolean('remove_thumbnail') && $project->thumbnail) {
-            Storage::disk('public')->delete($project->thumbnail);
-            $validated['thumbnail'] = null;
-        } elseif ($request->hasFile('thumbnail')) {
-            if ($project->thumbnail) {
-                Storage::disk('public')->delete($project->thumbnail);
-            }
-            $validated['thumbnail'] = $request->file('thumbnail')
-                ->store('projects/thumbnails', 'public');
-        } else {
-            unset($validated['thumbnail']);
-        }
-
-        $gallery = $request->input('existing_gallery', []);
-        if ($request->hasFile('gallery')) {
-            foreach ($request->file('gallery') as $image) {
-                $gallery[] = $image->store('projects/gallery', 'public');
-            }
-        }
-        $validated['gallery'] = $gallery;
+        $validated = $this->handleProjectFilesUpdate($request, $project, $validated);
 
         if (($validated['is_published'] ?? false) && ! $project->is_published) {
             $validated['published_at'] = now();
@@ -261,18 +178,11 @@ class ProjectController extends Controller
 
     public function destroy(Project $project): RedirectResponse
     {
-        if ($project->featured_image) {
-            Storage::disk('public')->delete($project->featured_image);
-        }
-
-        if ($project->thumbnail) {
-            Storage::disk('public')->delete($project->thumbnail);
-        }
+        $this->fileService->delete($project->featured_image);
+        $this->fileService->delete($project->thumbnail);
 
         if ($project->gallery) {
-            foreach ($project->gallery as $image) {
-                Storage::disk('public')->delete($image);
-            }
+            $this->fileService->deleteMultiple($project->gallery);
         }
 
         $project->delete();
@@ -294,11 +204,7 @@ class ProjectController extends Controller
 
     public function toggleFeatured(Project $project): RedirectResponse
     {
-        $project->update([
-            'is_featured' => ! $project->is_featured,
-        ]);
-
-        return back()->with('success', 'Estado destacado actualizado');
+        return $this->toggleAttribute($project, 'is_featured', 'Estado destacado actualizado');
     }
 
     public function togglePublished(Project $project): RedirectResponse
@@ -315,16 +221,69 @@ class ProjectController extends Controller
 
     public function reorder(Request $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'projects' => 'required|array',
-            'projects.*.id' => 'required|exists:projects,id',
-            'projects.*.order' => 'required|integer',
-        ]);
+        return $this->reorderItems($request, 'projects', Project::class);
+    }
 
-        foreach ($validated['projects'] as $item) {
-            Project::where('id', $item['id'])->update(['order' => $item['order']]);
+    private function handleProjectFiles(Request $request, array $validated): array
+    {
+        if ($request->hasFile('featured_image')) {
+            $validated['featured_image'] = $this->fileService->upload(
+                $request->file('featured_image'),
+                'projects/featured'
+            );
         }
 
-        return back()->with('success', 'Orden actualizado exitosamente');
+        if ($request->hasFile('thumbnail')) {
+            $validated['thumbnail'] = $this->fileService->upload(
+                $request->file('thumbnail'),
+                'projects/thumbnails'
+            );
+        }
+
+        if ($request->hasFile('gallery')) {
+            $validated['gallery'] = $this->fileService->uploadMultiple(
+                $request->file('gallery'),
+                'projects/gallery'
+            );
+        }
+
+        return $validated;
+    }
+
+    private function handleProjectFilesUpdate(Request $request, Project $project, array $validated): array
+    {
+        $validated['featured_image'] = $this->fileService->handleFileUpdate(
+            $project->featured_image,
+            $request->file('featured_image'),
+            $request->boolean('remove_featured_image'),
+            'projects/featured'
+        );
+
+        $validated['thumbnail'] = $this->fileService->handleFileUpdate(
+            $project->thumbnail,
+            $request->file('thumbnail'),
+            $request->boolean('remove_thumbnail'),
+            'projects/thumbnails'
+        );
+
+        if (! isset($validated['featured_image'])) {
+            unset($validated['featured_image']);
+        }
+
+        if (! isset($validated['thumbnail'])) {
+            unset($validated['thumbnail']);
+        }
+
+        $gallery = $request->input('existing_gallery', []);
+        if ($request->hasFile('gallery')) {
+            $newImages = $this->fileService->uploadMultiple(
+                $request->file('gallery'),
+                'projects/gallery'
+            );
+            $gallery = array_merge($gallery, $newImages);
+        }
+        $validated['gallery'] = $gallery;
+
+        return $validated;
     }
 }

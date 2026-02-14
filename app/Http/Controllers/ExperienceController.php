@@ -2,15 +2,24 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\HasReordering;
+use App\Http\Requests\StoreExperienceRequest;
+use App\Http\Requests\UpdateExperienceRequest;
 use App\Models\Experience;
+use App\Services\FileUploadService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class ExperienceController extends Controller
 {
+    use HasReordering;
+
+    public function __construct(
+        private FileUploadService $fileService
+    ) {}
+
     public function index(): Response
     {
         $experiences = Experience::ordered()->get();
@@ -32,29 +41,15 @@ class ExperienceController extends Controller
         ]);
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(StoreExperienceRequest $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'company' => 'required|string|max:255',
-            'company_logo' => 'nullable|image|max:2048',
-            'company_url' => 'nullable|url',
-            'location' => 'nullable|string|max:255',
-            'employment_type' => 'nullable|string|max:255',
-            'description' => 'nullable|string',
-            'responsibilities' => 'nullable|array',
-            'responsibilities.*' => 'string',
-            'achievements' => 'nullable|array',
-            'achievements.*' => 'string',
-            'start_date' => 'required|date',
-            'end_date' => 'nullable|date|after_or_equal:start_date',
-            'is_current' => 'boolean',
-            'order' => 'nullable|integer',
-        ]);
+        $validated = $request->validated();
 
         if ($request->hasFile('company_logo')) {
-            $validated['company_logo'] = $request->file('company_logo')
-                ->store('experiences/logos', 'public');
+            $validated['company_logo'] = $this->fileService->upload(
+                $request->file('company_logo'),
+                'experiences/logos'
+            );
         }
 
         if ($validated['is_current'] ?? false) {
@@ -74,36 +69,17 @@ class ExperienceController extends Controller
         ]);
     }
 
-    public function update(Request $request, Experience $experience): RedirectResponse
+    public function update(UpdateExperienceRequest $request, Experience $experience): RedirectResponse
     {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'company' => 'required|string|max:255',
-            'company_logo' => 'nullable|image|max:2048',
-            'remove_logo' => 'boolean',
-            'company_url' => 'nullable|url',
-            'location' => 'nullable|string|max:255',
-            'employment_type' => 'nullable|string|max:255',
-            'description' => 'nullable|string',
-            'responsibilities' => 'nullable|array',
-            'responsibilities.*' => 'string',
-            'achievements' => 'nullable|array',
-            'achievements.*' => 'string',
-            'start_date' => 'required|date',
-            'end_date' => 'nullable|date|after_or_equal:start_date',
-            'is_current' => 'boolean',
-            'order' => 'nullable|integer',
-        ]);
+        $validated = $request->validated();
 
-        if ($request->boolean('remove_logo') && $experience->company_logo) {
-            Storage::disk('public')->delete($experience->company_logo);
-            $validated['company_logo'] = null;
-        } elseif ($request->hasFile('company_logo')) {
-            if ($experience->company_logo) {
-                Storage::disk('public')->delete($experience->company_logo);
-            }
-            $validated['company_logo'] = $request->file('company_logo')
-                ->store('experiences/logos', 'public');
+        if ($request->hasFile('company_logo') || $request->boolean('remove_logo')) {
+            $validated['company_logo'] = $this->fileService->handleFileUpdate(
+                $experience->company_logo,
+                $request->file('company_logo'),
+                $request->boolean('remove_logo'),
+                'experiences/logos'
+            );
         } else {
             unset($validated['company_logo']);
         }
@@ -120,9 +96,7 @@ class ExperienceController extends Controller
 
     public function destroy(Experience $experience): RedirectResponse
     {
-        if ($experience->company_logo) {
-            Storage::disk('public')->delete($experience->company_logo);
-        }
+        $this->fileService->delete($experience->company_logo);
 
         $experience->delete();
 
@@ -132,16 +106,6 @@ class ExperienceController extends Controller
 
     public function reorder(Request $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'experiences' => 'required|array',
-            'experiences.*.id' => 'required|exists:experiences,id',
-            'experiences.*.order' => 'required|integer',
-        ]);
-
-        foreach ($validated['experiences'] as $item) {
-            Experience::where('id', $item['id'])->update(['order' => $item['order']]);
-        }
-
-        return back()->with('success', 'Orden actualizado exitosamente');
+        return $this->reorderItems($request, 'experiences', Experience::class);
     }
 }

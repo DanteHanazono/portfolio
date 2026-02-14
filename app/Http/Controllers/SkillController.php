@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\HasReordering;
+use App\Http\Controllers\Concerns\HasToggleable;
+use App\Http\Requests\StoreSkillRequest;
+use App\Http\Requests\UpdateSkillRequest;
 use App\Models\Skill;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -10,6 +14,8 @@ use Inertia\Response;
 
 class SkillController extends Controller
 {
+    use HasReordering, HasToggleable;
+
     public function index(Request $request): Response
     {
         $query = Skill::query();
@@ -45,18 +51,9 @@ class SkillController extends Controller
         ]);
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(StoreSkillRequest $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'category' => 'required|string|max:255',
-            'icon' => 'nullable|string|max:255',
-            'years_experience' => 'nullable|integer|min:0',
-            'is_highlighted' => 'boolean',
-            'order' => 'nullable|integer',
-        ]);
-
-        Skill::create($validated);
+        Skill::create($request->validated());
 
         return redirect()->route('skills.index')
             ->with('success', 'Habilidad agregada exitosamente');
@@ -79,18 +76,9 @@ class SkillController extends Controller
         ]);
     }
 
-    public function update(Request $request, Skill $skill): RedirectResponse
+    public function update(UpdateSkillRequest $request, Skill $skill): RedirectResponse
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'category' => 'required|string|max:255',
-            'icon' => 'nullable|string|max:255',
-            'years_experience' => 'nullable|integer|min:0',
-            'is_highlighted' => 'boolean',
-            'order' => 'nullable|integer',
-        ]);
-
-        $skill->update($validated);
+        $skill->update($request->validated());
 
         return redirect()->route('skills.index')
             ->with('success', 'Habilidad actualizada exitosamente');
@@ -106,26 +94,12 @@ class SkillController extends Controller
 
     public function toggleHighlighted(Skill $skill): RedirectResponse
     {
-        $skill->update([
-            'is_highlighted' => ! $skill->is_highlighted,
-        ]);
-
-        return back()->with('success', 'Estado destacado actualizado');
+        return $this->toggleAttribute($skill, 'is_highlighted', 'Estado destacado actualizado');
     }
 
     public function reorder(Request $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'skills' => 'required|array',
-            'skills.*.id' => 'required|exists:skills,id',
-            'skills.*.order' => 'required|integer',
-        ]);
-
-        foreach ($validated['skills'] as $item) {
-            Skill::where('id', $item['id'])->update(['order' => $item['order']]);
-        }
-
-        return back()->with('success', 'Orden actualizado exitosamente');
+        return $this->reorderItems($request, 'skills', Skill::class);
     }
 
     public function bulkUpdateLevels(Request $request): RedirectResponse

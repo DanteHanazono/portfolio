@@ -2,16 +2,26 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\HasReordering;
+use App\Http\Controllers\Concerns\HasToggleable;
+use App\Http\Requests\StoreTestimonialRequest;
+use App\Http\Requests\UpdateTestimonialRequest;
 use App\Models\Project;
 use App\Models\Testimonial;
+use App\Services\FileUploadService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class TestimonialController extends Controller
 {
+    use HasReordering, HasToggleable;
+
+    public function __construct(
+        private FileUploadService $fileService
+    ) {}
+
     public function index(Request $request): Response
     {
         $query = Testimonial::query()->with('project');
@@ -48,24 +58,15 @@ class TestimonialController extends Controller
         ]);
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(StoreTestimonialRequest $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'project_id' => 'nullable|exists:projects,id',
-            'client_name' => 'required|string|max:255',
-            'client_position' => 'nullable|string|max:255',
-            'client_company' => 'nullable|string|max:255',
-            'client_avatar' => 'nullable|image|max:2048',
-            'content' => 'required|string',
-            'rating' => 'required|integer|min:1|max:5',
-            'is_featured' => 'boolean',
-            'is_published' => 'boolean',
-            'order' => 'nullable|integer',
-        ]);
+        $validated = $request->validated();
 
         if ($request->hasFile('client_avatar')) {
-            $validated['client_avatar'] = $request->file('client_avatar')
-                ->store('testimonials/avatars', 'public');
+            $validated['client_avatar'] = $this->fileService->upload(
+                $request->file('client_avatar'),
+                'testimonials/avatars'
+            );
         }
 
         Testimonial::create($validated);
@@ -93,31 +94,17 @@ class TestimonialController extends Controller
         ]);
     }
 
-    public function update(Request $request, Testimonial $testimonial): RedirectResponse
+    public function update(UpdateTestimonialRequest $request, Testimonial $testimonial): RedirectResponse
     {
-        $validated = $request->validate([
-            'project_id' => 'nullable|exists:projects,id',
-            'client_name' => 'required|string|max:255',
-            'client_position' => 'nullable|string|max:255',
-            'client_company' => 'nullable|string|max:255',
-            'client_avatar' => 'nullable|image|max:2048',
-            'remove_avatar' => 'boolean',
-            'content' => 'required|string',
-            'rating' => 'required|integer|min:1|max:5',
-            'is_featured' => 'boolean',
-            'is_published' => 'boolean',
-            'order' => 'nullable|integer',
-        ]);
+        $validated = $request->validated();
 
-        if ($request->boolean('remove_avatar') && $testimonial->client_avatar) {
-            Storage::disk('public')->delete($testimonial->client_avatar);
-            $validated['client_avatar'] = null;
-        } elseif ($request->hasFile('client_avatar')) {
-            if ($testimonial->client_avatar) {
-                Storage::disk('public')->delete($testimonial->client_avatar);
-            }
-            $validated['client_avatar'] = $request->file('client_avatar')
-                ->store('testimonials/avatars', 'public');
+        if ($request->hasFile('client_avatar') || $request->boolean('remove_avatar')) {
+            $validated['client_avatar'] = $this->fileService->handleFileUpdate(
+                $testimonial->client_avatar,
+                $request->file('client_avatar'),
+                $request->boolean('remove_avatar'),
+                'testimonials/avatars'
+            );
         } else {
             unset($validated['client_avatar']);
         }
@@ -130,9 +117,7 @@ class TestimonialController extends Controller
 
     public function destroy(Testimonial $testimonial): RedirectResponse
     {
-        if ($testimonial->client_avatar) {
-            Storage::disk('public')->delete($testimonial->client_avatar);
-        }
+        $this->fileService->delete($testimonial->client_avatar);
 
         $testimonial->delete();
 
@@ -142,34 +127,16 @@ class TestimonialController extends Controller
 
     public function toggleFeatured(Testimonial $testimonial): RedirectResponse
     {
-        $testimonial->update([
-            'is_featured' => ! $testimonial->is_featured,
-        ]);
-
-        return back()->with('success', 'Estado destacado actualizado');
+        return $this->toggleAttribute($testimonial, 'is_featured', 'Estado destacado actualizado');
     }
 
     public function togglePublished(Testimonial $testimonial): RedirectResponse
     {
-        $testimonial->update([
-            'is_published' => ! $testimonial->is_published,
-        ]);
-
-        return back()->with('success', 'Estado de publicación actualizado');
+        return $this->toggleAttribute($testimonial, 'is_published', 'Estado de publicación actualizado');
     }
 
     public function reorder(Request $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'testimonials' => 'required|array',
-            'testimonials.*.id' => 'required|exists:testimonials,id',
-            'testimonials.*.order' => 'required|integer',
-        ]);
-
-        foreach ($validated['testimonials'] as $item) {
-            Testimonial::where('id', $item['id'])->update(['order' => $item['order']]);
-        }
-
-        return back()->with('success', 'Orden actualizado exitosamente');
+        return $this->reorderItems($request, 'testimonials', Testimonial::class);
     }
 }
